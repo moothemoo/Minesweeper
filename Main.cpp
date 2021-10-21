@@ -82,9 +82,7 @@ int main()
     window.clearScreen();
     window.newFrame();
 
-    Texture2D texture = ResourceManager::LoadTexture("BlobTP.png", true, "default");
-    Texture2D rgba = ResourceManager::LoadTexture("Bing.png", true, "B");
-    Texture2D sSheetTex = ResourceManager::LoadTexture("spritesheetArchitecture.png", true, "S");
+    Texture2D sSheetTex = ResourceManager::LoadTexture("MinesweeperSpriteSheet.png", true, "S");
 
     SpriteSheet sSheet = SpriteSheet(4, 4, sSheetTex);
 
@@ -130,21 +128,6 @@ int main()
         map.drawMap();
 
         camera.Matrix(shader, "camera");
-
-        renderer.drawSprite(
-            texture, 
-            glm::vec2(glm::sin(time), glm::sin(3.0f/4.0f * time)),
-            time * 30.0f,
-            glm::vec2(1.0f, 1.0f), 
-            glm::vec3(1.0f, 1.0f, 1.0f)
-        ); 
-        renderer.drawSprite(
-            rgba,
-            glm::vec2(glm::sin(time+1.0f), glm::sin(3.0f / 4.0f * time)),
-            time * 30.0f,
-            glm::vec2(glm::sin(2.5 * time) / 2 + 1.0f, glm::sin(2.5 * time) / 2 + 1.0f),
-            glm::vec3(glm::sin(21.0f / 5.0f * time)/2 + .5f, glm::sin(22.0f / 5.0f * time) / 2 + .5f, glm::sin(4.0f * time) / 2 + .5f)
-        );
 
         // Swaps back buffer and front buffer
         window.newFrame();

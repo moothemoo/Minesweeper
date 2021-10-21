@@ -72,23 +72,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)/Libraries/include</IncludePath>
-    <LibraryPath>$(SolutionDir)/Libraries/lib</LibraryPath>
+    <IncludePath>$(SolutionDir)Libraries\include</IncludePath>
+    <LibraryPath>$(SolutionDir)Libraries\lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)/Libraries/include</IncludePath>
-    <LibraryPath>$(SolutionDir)/Libraries/lib</LibraryPath>
+    <IncludePath>$(SolutionDir)Libraries\include</IncludePath>
+    <LibraryPath>$(SolutionDir)Libraries\lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)/Libraries/include</IncludePath>
-    <LibraryPath>$(SolutionDir)/Libraries/lib</LibraryPath>
+    <IncludePath>$(SolutionDir)Libraries\include</IncludePath>
+    <LibraryPath>$(SolutionDir)Libraries\lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)/Libraries/include</IncludePath>
-    <LibraryPath>$(SolutionDir)/Libraries/lib</LibraryPath>
+    <IncludePath>$(SolutionDir)Libraries\include</IncludePath>
+    <LibraryPath>$(SolutionDir)Libraries\lib</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -194,15 +194,10 @@
     <ClInclude Include="VBO.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\Pictures\Capture.JPG" />
-    <Image Include="Bing.png" />
-    <Image Include="BlobTP.png" />
-    <Image Include="RGBASample.png" />
-    <Image Include="spriteSheet.png" />
-    <Image Include="spritesheetArchitecture.png" />
+    <Text Include="2DRenderer.vert" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="2DRenderer.vert" />
+    <Image Include="MinesweeperSpriteSheet.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

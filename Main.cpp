@@ -20,13 +20,19 @@
 #include"Map.h"
 #include"Tile.h"
 
-// Prototype for input
+// Prototypes
 void processInput(GLFWwindow* window, float dt);
-
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void initGlfw();
 
-const unsigned int width = 800;
-const unsigned int height = 800;
+unsigned int width = 800;
+unsigned int height = 800;
+
+float fovWidth = 4.0f;
+float fovHeight = 4.0f;
+
+double mPosX = 0;
+double mPosY = 0;
 
 float speed = 2.0f;
 
@@ -41,6 +47,9 @@ int main()
     
     // New window object, width 800, height 600, Titled LearnOpenGL, last two parameters irrelevant
     Window window = Window(width, height, "Window", NULL, NULL);
+
+    glfwSetCursorPosCallback(window.window, mouse_callback);
+
 
     // Initialize GLAD and returns error if fails
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -82,11 +91,12 @@ int main()
     window.clearScreen();
     window.newFrame();
 
+    Texture2D doggo = ResourceManager::LoadTexture("Bing.png", true, "Dog");
     Texture2D sSheetTex = ResourceManager::LoadTexture("MinesweeperSpriteSheet.png", true, "S");
 
     SpriteSheet sSheet = SpriteSheet(4, 4, sSheetTex);
 
-    Camera2D camera(4.0f, 4.0f, glm::vec2(0.0f, 0.0f));
+    Camera2D camera(fovWidth, fovHeight, glm::vec2(0.0f, 0.0f));
     //glm::mat4 view = glm::mat4(1.0f);
 
     glEnable(GL_BLEND);
@@ -100,7 +110,7 @@ int main()
     prevFrame = glfwGetTime();
     float time;
 
-    Map map("Hex", sSheet, tShader, 0.5f, 0.5f);
+    Map map("Hex", sSheet, tShader, 0.125f, 0.125f);
 
     while (!glfwWindowShouldClose(window.window))
     {
@@ -128,6 +138,20 @@ int main()
         map.drawMap();
 
         camera.Matrix(shader, "camera");
+
+        renderer.drawSprite(
+            doggo,
+            glm::vec2(mPosX, mPosY) + position,
+            glfwGetTime() * 90,
+            glm::vec2(0.10f, 0.1f),
+            glm::vec3(1.0f)
+            );
+
+        int tX, tY;
+
+        map.getTile(tX, tY, mPosX + position[0], mPosY + position[1]);
+
+        std::cout << tX << ", " << tY << std::endl;
 
         // Swaps back buffer and front buffer
         window.newFrame();
@@ -174,6 +198,15 @@ void processInput(GLFWwindow* window, float dt)
         position[0] += speed * dt;
         regenProj = true;
     }
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    mPosX = xpos / width * fovWidth - fovWidth / 2;
+    mPosY = -ypos / height * fovHeight + fovHeight / 2;
+
+    //std::cout << xpos << ", " << ypos << "                                ";
+    //std::cout << mPosX << ", " << mPosY << std::endl;
 }
 
 void initGlfw()

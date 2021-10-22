@@ -33,6 +33,13 @@ const Tile& Map::getTile(unsigned int x, unsigned int y) const
 	return TileArray[x][y];
 }
 
+
+void Map::getTile(int& xLoc, int& yLoc, float mouseX, float mouseY)
+{
+	xLoc = mouseX / TileWidth;
+	yLoc = mouseY / TileHeight;
+}
+
 void Map::drawMap() const
 {
 	_Shader->Use();
@@ -77,7 +84,7 @@ void Map::init(std::string file)
 	width = getInt(mapStream);
 	height = getInt(mapStream);
 
-	if (width * height > length)
+	if (width * height + 8 > length)
 	{
 		std::cout << "EOF exception in map file " << file << std::endl;
 		assert(false);
@@ -97,7 +104,7 @@ void Map::init(std::string file)
 
 			GLfloat left, right, top, bottom;
 			_sSheet->GetTexLoc(left, right, top, bottom, tID);
-			//std::cout << left << ", " << right << ", " << top << ", " << bottom << ", " << x << ", " << y << std::endl;
+			std::cout << left << ", " << right << ", " << top << ", " << bottom << ", " << x << ", " << y << std::endl;
 
 			//Bottom left
 			//Vertex location

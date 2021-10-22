@@ -17,6 +17,7 @@ public:
 	Map(std::string file, const SpriteSheet& spriteSheet, const Shader& shader, GLfloat TileWidth, GLfloat TileHeight);
 
 	const Tile& getTile(unsigned int x, unsigned int y) const;
+	void getTile(int& xLoc, int& yLoc, float mouseX, float mouseY);
 
 	void drawMap() const;
 

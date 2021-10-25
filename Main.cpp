@@ -37,6 +37,7 @@ double mPosY = 0;
 float speed = 2.0f;
 
 bool regenProj = false;
+bool firstClick = true;
 
 glm::vec2 position = glm::vec2(0.0f, 0.0f);
 
@@ -47,8 +48,7 @@ int main()
     
     // New window object, width 800, height 600, Titled LearnOpenGL, last two parameters irrelevant
     Window window = Window(width, height, "Window", NULL, NULL);
-
-    glfwSetCursorPosCallback(window.window, mouse_callback);
+    //glfwSetCursorPosCallback(window.window, mouse_callback);
 
 
     // Initialize GLAD and returns error if fails
@@ -110,7 +110,10 @@ int main()
     prevFrame = glfwGetTime();
     float time;
 
-    Map map("Hex", sSheet, tShader, 0.125f, 0.125f);
+    int tX, tY;
+    bool validTile;
+
+    Map map("Hex", sSheet, tShader, 1.0f, 1.0f);
 
     while (!glfwWindowShouldClose(window.window))
     {
@@ -125,8 +128,7 @@ int main()
 
         if (regenProj)
         {
-            camera.SetPosition(position, regenProj);
-            regenProj = false;
+            camera.SetPosition(position);
         }
 
         // Redraws Background, starts shader, sets VAO1 to active vertex array object, and draws
@@ -147,11 +149,10 @@ int main()
             glm::vec3(1.0f)
             );
 
-        int tX, tY;
 
-        map.getTile(tX, tY, mPosX + position[0], mPosY + position[1]);
+        validTile = map.getTile(tX, tY, mPosX + position[0], mPosY + position[1]);
 
-        std::cout << tX << ", " << tY << std::endl;
+        //std::cout << tX << ", " << tY << ",     " << validTile << std::endl;
 
         // Swaps back buffer and front buffer
         window.newFrame();
@@ -197,6 +198,14 @@ void processInput(GLFWwindow* window, float dt)
     {
         position[0] += speed * dt;
         regenProj = true;
+    }
+    if (firstClick && (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS))
+    {
+        firstClick = false;
+    }
+    else if (!firstClick && (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE))
+    {
+        firstClick = true;
     }
 }
 

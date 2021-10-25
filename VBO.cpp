@@ -8,6 +8,14 @@ VBO::VBO(GLfloat* vertices, GLsizeiptr size)
 
 }
 
+VBO::VBO(GLfloat* vertices, GLsizeiptr size, GLenum access)
+{
+	glGenBuffers(1, &ID);
+	glBindBuffer(GL_ARRAY_BUFFER, ID);
+	glBufferData(GL_ARRAY_BUFFER, size, vertices, access);
+
+}
+
 void VBO::Bind() const
 {
 	glBindBuffer(GL_ARRAY_BUFFER, ID);

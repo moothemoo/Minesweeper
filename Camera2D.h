@@ -14,20 +14,22 @@
 class Camera2D
 {
 public:
+	bool regenProj;
 
 	Camera2D(float width, float height, glm::vec2 position);
+	Camera2D() {}
 
 	void Matrix(Shader& shader, const char* uniform);
-	void SetPosition(glm::vec2 position, bool regen);
 	void SetPosition(glm::vec2 position);
+	void Move(glm::vec2 vector);
 	void SetDimensions(glm::vec2 dimensions);
 	void RegenProj();
 	glm::vec2 GetPosition() const;
 	glm::mat4 GetProjection() const;
 
 private:
-	float width;
-	float height;
+	float width, height;
+	bool regenProj;
 	glm::vec2 Position;
 	glm::mat4 projection;
 };

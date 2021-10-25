@@ -13,15 +13,22 @@
 class Map
 {
 public:
+
+	Map() {}
 	Map(std::string file, const SpriteSheet& spriteSheet, const Shader& shader);
 	Map(std::string file, const SpriteSheet& spriteSheet, const Shader& shader, GLfloat TileWidth, GLfloat TileHeight);
+	Map(std::string file, const SpriteSheet& spriteSheet, const Shader& shader, GLfloat TileWidth, GLfloat TileHeight);
+
 
 	const Tile& getTile(unsigned int x, unsigned int y) const;
-	void getTile(int& xLoc, int& yLoc, float mouseX, float mouseY);
+	bool getTile(int& xLoc, int& yLoc, float mouseX, float mouseY);
+	void setTileTex(unsigned int texID, int xLoc, int yLoc);
 
 	void drawMap() const;
 
 	const VAO& getVAO();
+
+	const static int NUM_QUAD_COMPONENTS = 24;
 
 private:
 	int width, height;
@@ -38,7 +45,6 @@ private:
 	std::stringstream readMapFile(std::string file);
 	int getInt(std::stringstream& stream);
 	void init(std::string file);
-
 };
 
 #endif

@@ -85,7 +85,7 @@ void Game::ProcessInput(GLFWwindow* window, float dt)
         mouseY = -mouseY / height * fov[1] + fov[1] / 2 + cameraPos[1];
 
         int tileX, tileY;
-        map.getTile(tileX, tileY, mouseX, mouseY);
+        mapRenderer.getTile(tileX, tileY, mouseX, mouseY);
         std::cout << tileX << ", " << tileY << std::endl;
     }
     else if (!firstClick && (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE))
@@ -96,5 +96,5 @@ void Game::ProcessInput(GLFWwindow* window, float dt)
 
 void Game::Render()
 {
-    map.drawMap(camera.GetProjection());
+    mapRenderer.drawMap(camera.GetProjection());
 }

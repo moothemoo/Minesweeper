@@ -24,6 +24,7 @@ void Camera2D::SetPosition(glm::vec2 position)
 
 void Camera2D::Move(glm::vec2 vector)
 {
+	//std::cout << vector[0] << ", " << vector[1] << std::endl;
 	Position += vector;
 	regenProj = true;
 }
@@ -32,6 +33,11 @@ void Camera2D::SetDimensions(glm::vec2 dimensions)
 {
 	height = dimensions[1];
 	width = dimensions[0];
+}
+
+glm::vec2 Camera2D::GetDimensions() const
+{
+	return glm::vec2(width, height);
 }
 
 void Camera2D::RegenProj()

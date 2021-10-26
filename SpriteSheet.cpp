@@ -1,6 +1,6 @@
 #include"SpriteSheet.h"
 
-SpriteSheet::SpriteSheet(unsigned int numWidth, unsigned int numHeight, Texture2D& tex)
+SpriteSheet::SpriteSheet(unsigned int numWidth, unsigned int numHeight, const Texture2D& tex)
 	: numSpritesX(numWidth),
 	numSpritesY(numHeight),
 	texture(&tex)

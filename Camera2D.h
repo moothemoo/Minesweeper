@@ -26,10 +26,10 @@ public:
 	void RegenProj();
 	glm::vec2 GetPosition() const;
 	glm::mat4 GetProjection() const;
+	glm::vec2 GetDimensions() const;
 
 private:
 	float width, height;
-	bool regenProj;
 	glm::vec2 Position;
 	glm::mat4 projection;
 };

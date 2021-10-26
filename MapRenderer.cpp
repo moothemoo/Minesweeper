@@ -1,4 +1,4 @@
-#include "Map.h"
+#include "MapRenderer.h"
 
 
 #include <iostream>
@@ -6,14 +6,14 @@
 #include <fstream>
 
 
-Map::Map(std::string file, const SpriteSheet& spriteSheet, const Shader& shader)
+MapRenderer::MapRenderer(std::string file, const SpriteSheet& spriteSheet, const Shader& shader)
 	:_sSheet(&spriteSheet),
 	_Shader(&shader)
 {
 	init(file);
 }
 
-Map::Map(std::string file, const SpriteSheet& spriteSheet, const Shader& shader, GLfloat TileWidth, GLfloat TileHeight)
+MapRenderer::MapRenderer(std::string file, const SpriteSheet& spriteSheet, const Shader& shader, GLfloat TileWidth, GLfloat TileHeight)
 	:_sSheet(&spriteSheet),
 	_Shader(&shader),
 	TileWidth(TileWidth),
@@ -23,33 +23,84 @@ Map::Map(std::string file, const SpriteSheet& spriteSheet, const Shader& shader,
 }
 
 
-const VAO& Map::getVAO()
+const VAO& MapRenderer::getVAO()
 {
 	return _VAO;
 }
 
-const Tile& Map::getTile(unsigned int x, unsigned int y) const
+const Tile& MapRenderer::getTile(unsigned int x, unsigned int y) const
 {
 	return TileArray[x][y];
 }
 
 
-void Map::getTile(int& xLoc, int& yLoc, float mouseX, float mouseY)
+bool MapRenderer::getTile(int& xLoc, int& yLoc, float mouseX, float mouseY)
 {
-	xLoc = mouseX / TileWidth;
-	yLoc = mouseY / TileHeight;
+	xLoc = (int)std::floor((float) mouseX / TileWidth);
+	yLoc = (int)std::floor((float) mouseY / TileHeight);
+
+	return (xLoc >= 0 && xLoc < width&& yLoc >= 0 && yLoc < height);
 }
 
-void Map::drawMap() const
+void MapRenderer::setTileTex(unsigned int texID, int xLoc, int yLoc)
+{
+	GLfloat left, right, top, bottom;
+	_sSheet->GetTexLoc(left, right, top, bottom, texID);
+
+	//std::cout << left << ", " << right << ", " << top << ", " << bottom << std::endl;
+
+	int quadLoc = (xLoc + yLoc * width) * MapRenderer::NUM_QUAD_COMPONENTS;
+
+	_VBO.Bind();
+
+	GLfloat *ptr = (GLfloat*) glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+
+	//	   |Bottom Left   | Bottom right  | Top left	  | Top right	  | Top left	  | Bottom right  |
+	//	   |Vertex|Texture| Vertex|Texture| Vertex|Texture| Vertex|Texture| Vertex|Texture| Vertex|Texture|
+	//	   | 0	1 |	2	3 | 4	5 | 6	7 | 8	9 | 10	11| 12	13| 14	15| 16	17| 18	19| 20	21| 22	23|
+	
+	//Bottom Left
+	ptr[quadLoc + 2] = left;
+	ptr[quadLoc + 3] = bottom;
+	//Bottom right
+	ptr[quadLoc + 6] = right;
+	ptr[quadLoc + 7] = bottom;
+	//Top left
+	ptr[quadLoc + 10] = left;
+	ptr[quadLoc + 11] = top;
+	//Top right
+	ptr[quadLoc + 14] = right;
+	ptr[quadLoc + 15] = top;
+	//Top left
+	ptr[quadLoc + 18] = left;
+	ptr[quadLoc + 19] = top;
+	//Bottom right
+	ptr[quadLoc + 22] = right;
+	ptr[quadLoc + 23] = bottom;
+
+	glUnmapBuffer(GL_ARRAY_BUFFER);
+
+
+	/*ptr = (GLfloat*)glMapBufferRange(GL_ARRAY_BUFFER, (GLintptr)quadLoc, MapRenderer::NUM_QUAD_COMPONENTS, GL_MAP_READ_BIT);
+	for (int i = 0; i < MapRenderer::NUM_QUAD_COMPONENTS; i++)
+	{
+		std::cout << ptr[i] << ", ";
+	}
+	glUnmapBuffer(GL_ARRAY_BUFFER);*/
+}
+
+void MapRenderer::drawMap(glm::mat4 projection) const
 {
 	_Shader->Use();
 	_VAO.Bind();
 	_sSheet->getTex().Bind(); //bind texture
 
+	_Shader->SetMatrix4("camera", projection);
+
 	glDrawArrays(GL_TRIANGLES, 0, width * height * 6); //width * height = numQuads
 }
 
-std::stringstream Map::readMapFile(std::string file)
+std::stringstream MapRenderer::readMapFile(std::string file)
 {
 	std::stringstream stream;
 	try
@@ -59,12 +110,12 @@ std::stringstream Map::readMapFile(std::string file)
 	}
 	catch (std::exception e)
 	{
-		std::cout << "ERROR::MAP: Failed to find load file" << file << std::endl;
+		std::cout << "ERROR::MapRenderer: Failed to find load file" << file << std::endl;
 	}
 	return stream;
 }
 
-int Map::getInt(std::stringstream& stream)
+int MapRenderer::getInt(std::stringstream& stream)
 {
 	int out = (stream.get() << 24);
 	out = out | (stream.get() << 16);
@@ -73,7 +124,7 @@ int Map::getInt(std::stringstream& stream)
 	return out;
 }
 
-void Map::init(std::string file)
+void MapRenderer::init(std::string file)
 {
 	std::stringstream mapStream = readMapFile(file);
 
@@ -86,25 +137,25 @@ void Map::init(std::string file)
 
 	if (width * height + 8 > length)
 	{
-		std::cout << "EOF exception in map file " << file << std::endl;
+		std::cout << "EOF exception in MapRenderer file " << file << std::endl;
 		assert(false);
 	}
 
-	vertexArray = std::vector<GLfloat>(width * height * 24, 0.0f);
+	vertexArray = std::vector<GLfloat>(width * height * MapRenderer::NUM_QUAD_COMPONENTS, 0.0f);
 	TileArray = std::vector<std::vector<Tile>>(width, std::vector<Tile>(height));
 	unsigned int tLoc = 0;
 	unsigned int tID;
 
-	for (int x = 0; x < width; x++)
+	for (int y = 0; y < height; y++)
 	{
-		for (int y = 0; y < height; y++)
+		for (int x = 0; x < width; x++)
 		{
 			tID = mapStream.get();
 			TileArray[x][y] = Tile(tID);
 
 			GLfloat left, right, top, bottom;
 			_sSheet->GetTexLoc(left, right, top, bottom, tID);
-			std::cout << left << ", " << right << ", " << top << ", " << bottom << ", " << x << ", " << y << std::endl;
+			//std::cout << left << ", " << right << ", " << top << ", " << bottom << ", " << x << ", " << y << std::endl;
 
 			//Bottom left
 			//Vertex location
@@ -167,21 +218,19 @@ void Map::init(std::string file)
 		assert(false);
 	}
 
-
-	/*for (int i = 0; i < (width*height * 24); i++)
+	/*for (int i = 0; i < (width*height * NUM_QUAD_COMPONENTS); i++)
 	{
 		std::cout << vertexArray[i] << ", ";
 		if (i % 4 == 3)
 		{
 			std::cout << std::endl;
 		}
-	}*/
+	}
+	std::cout << std::endl;*/
 
-	std::cout << std::endl;
 
-
-	_VBO = VBO(&vertexArray[0], vertexArray.size() * sizeof(GLfloat));
-	std::cout << sizeof(vertexArray);
+	_VBO = VBO(&vertexArray[0], vertexArray.size() * sizeof(GLfloat), GL_DYNAMIC_DRAW);
+	//std::cout << sizeof(vertexArray);
 
 	_VAO.Bind();
 	_VBO.Bind();

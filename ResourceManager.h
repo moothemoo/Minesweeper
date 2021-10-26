@@ -3,12 +3,12 @@
 
 #include <map>
 #include <string>
-#include<vector>
+#include <vector>
 #include <glad/glad.h>
 
 #include "Texture.h"
 #include "Shader.h"
-#include "Tile.h"
+#include "SpriteSheet.h"
 
 
 // A static singleton ResourceManager class that hosts several
@@ -20,8 +20,9 @@ class ResourceManager
 {
 public:
     // resource storage
-    static std::map<std::string, Shader>    Shaders;
-    static std::map<std::string, Texture2D> Textures;
+    static std::map<std::string, Shader>        Shaders;
+    static std::map<std::string, Texture2D>     Textures;
+    static std::map<std::string, SpriteSheet>   SpriteSheets;
     
     // loads (and generates) a shader program from file loading vertex, fragment (and geometry) shader's source code. If gShaderFile is not nullptr, it also loads a geometry shader
     static const Shader &    LoadShader(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile, std::string name);
@@ -32,6 +33,11 @@ public:
     static const Texture2D & LoadTexture(const char* file, bool alpha, std::string name);
     // retrieves a stored texture
     static const Texture2D & GetTexture(std::string name);
+
+    // loads (and generates) a spritesheet
+    static const SpriteSheet& LoadSpriteSheet(const char* texName, unsigned int numTexWidth, unsigned int numTexHeight, std::string name);
+    // retrieves a stored spritesheet
+    static const SpriteSheet& GetSpriteSheet(std::string name);
 
 
 

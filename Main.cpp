@@ -114,7 +114,8 @@ int main()
     int tX, tY;
     bool validTile;
 
-    MapRenderer map("Hex", sSheet, tShader, 1.0f, 1.0f);
+    MapRenderer map(sSheet, tShader, 1.0f, 1.0f);
+    map.init("Hex");
 
     Game game = Game(width, height);
     game.Init();

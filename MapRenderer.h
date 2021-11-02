@@ -15,11 +15,13 @@ class MapRenderer
 public:
 
 	MapRenderer() {}
-	MapRenderer(std::string file, const SpriteSheet& spriteSheet, const Shader& shader);
-	MapRenderer(std::string file, const SpriteSheet& spriteSheet, const Shader& shader, GLfloat TileWidth, GLfloat TileHeight);
+	MapRenderer(const SpriteSheet& spriteSheet, const Shader& shader);
+	MapRenderer(const SpriteSheet& spriteSheet, const Shader& shader, GLfloat TileWidth, GLfloat TileHeight);
 
+	void init(std::string file);
+	void init(std::stringstream mapStream);
+	void init(unsigned int width, unsigned int height, unsigned int defTexID);
 
-	const Tile& getTile(unsigned int x, unsigned int y) const;
 	bool getTile(int& xLoc, int& yLoc, float mouseX, float mouseY);
 	void setTileTex(unsigned int texID, int xLoc, int yLoc);
 
@@ -31,7 +33,6 @@ public:
 
 private:
 	int width, height;
-	std::vector<std::vector<Tile>> TileArray;
 	std::vector<GLfloat> vertexArray;
 	VAO _VAO;
 	VBO _VBO;
@@ -43,7 +44,9 @@ private:
 
 	std::stringstream readMapFile(std::string file);
 	int getInt(std::stringstream& stream);
-	void init(std::string file);
+	void genQuad(unsigned int& tLoc, unsigned int tID, int x, int y);
+
+	void loadVBO(std::stringstream& mapStream);
 };
 
 #endif

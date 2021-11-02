@@ -5,17 +5,8 @@ Game::Game(unsigned int width, unsigned int height)
     : State(GAME_ACTIVE), 
     Keys(),
     camera(),
-    mapRenderer(),
+    map(),
     width(width), height(height)
-{
-
-}
-
-Game::Game(MapRenderer& mapRenderer, Camera2D& camera)
-    : State(GAME_ACTIVE),
-    Keys(),
-    camera(camera),
-    mapRenderer(mapRenderer)
 {
 
 }
@@ -37,7 +28,7 @@ void Game::Init()
 
     camera = Camera2D(4.0f, 4.0f, glm::vec2(0.0f, 0.0f));
 
-    mapRenderer = MapRenderer("Hex", ResourceManager::GetSpriteSheet("MineSheet"), ResourceManager::GetShader("tShader"), .25f, .25f);
+    map = Map(255, 255, 9, ResourceManager::GetSpriteSheet("MineSheet"), ResourceManager::GetShader("tShader"));
 
 }
 
@@ -84,9 +75,7 @@ void Game::ProcessInput(GLFWwindow* window, float dt)
         mouseX = mouseX / width * fov[0] - fov[0] / 2 + cameraPos[0];
         mouseY = -mouseY / height * fov[1] + fov[1] / 2 + cameraPos[1];
 
-        int tileX, tileY;
-        mapRenderer.getTile(tileX, tileY, mouseX, mouseY);
-        std::cout << tileX << ", " << tileY << std::endl;
+        map.click(mouseX, mouseY);
     }
     else if (!firstClick && (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE))
     {
@@ -96,5 +85,5 @@ void Game::ProcessInput(GLFWwindow* window, float dt)
 
 void Game::Render()
 {
-    mapRenderer.drawMap(camera.GetProjection());
+    map.Render(camera.GetProjection());
 }

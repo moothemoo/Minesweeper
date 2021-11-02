@@ -5,7 +5,7 @@ Tile::Tile()
 {
 }
 
-Tile::Tile(char ID)
+Tile::Tile(unsigned int ID)
 	:tileID(ID)
 {
 }

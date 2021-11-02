@@ -8,9 +8,10 @@ class Tile
 {
 public:
 	Tile();
-	Tile(char ID);
+	Tile(unsigned int ID);
 protected:
 	unsigned int tileID;
+	bool mine = false;
 };
 
 #endif

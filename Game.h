@@ -3,7 +3,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "MapRenderer.h"
+#include "Map.h"
 #include "Camera2D.h"
 
 // Represents the current state of the game
@@ -21,7 +21,7 @@ class Game
 public:
     GameState               State;
     bool                    Keys[1024];
-    MapRenderer             mapRenderer;
+    Map                     map;
     Camera2D                camera;
     unsigned int            width, height;
 
@@ -31,7 +31,6 @@ public:
 
     // constructor/destructor
     Game(unsigned int width, unsigned int height);
-    Game(MapRenderer& mapRenderer, Camera2D& camera);
     ~Game();
     // initialize game state (load all shaders/textures/levels)
     void Init();

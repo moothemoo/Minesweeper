@@ -72,6 +72,9 @@ void Game::ProcessInput(GLFWwindow* window, float dt)
         glm::vec2 fov = camera.GetDimensions();
         glfwGetCursorPos(window, &mouseX, &mouseY);
        
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+
         mouseX = mouseX / width * fov[0] - fov[0] / 2 + cameraPos[0];
         mouseY = -mouseY / height * fov[1] + fov[1] / 2 + cameraPos[1];
 

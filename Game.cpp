@@ -28,7 +28,7 @@ void Game::Init()
 
     camera = Camera2D(4.0f, 4.0f, glm::vec2(0.0f, 0.0f));
 
-    map = Map(255, 255, 9, ResourceManager::GetSpriteSheet("MineSheet"), ResourceManager::GetShader("tShader"));
+    map = Map(5, 10, 9, ResourceManager::GetSpriteSheet("MineSheet"), ResourceManager::GetShader("tShader"));
 
 }
 
@@ -64,9 +64,9 @@ void Game::ProcessInput(GLFWwindow* window, float dt)
     camera.Move(position);
     camera.RegenProj();
 
-    if (firstClick && (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS))
+    if (fallingEdge && (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS))
     {
-        firstClick = false;
+        fallingEdge = false;
         double mouseX, mouseY;
         glm::vec2 cameraPos = camera.GetPosition();
         glm::vec2 fov = camera.GetDimensions();
@@ -78,11 +78,17 @@ void Game::ProcessInput(GLFWwindow* window, float dt)
         mouseX = mouseX / width * fov[0] - fov[0] / 2 + cameraPos[0];
         mouseY = -mouseY / height * fov[1] + fov[1] / 2 + cameraPos[1];
 
+        if (firstClick)
+        {
+            firstClick = false;
+            map.loadMines(.5, mouseX, mouseY);
+        }
+
         map.click(mouseX, mouseY);
     }
-    else if (!firstClick && (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE))
+    else if (!fallingEdge && (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE))
     {
-        firstClick = true;
+        fallingEdge = true;
     }
 }
 

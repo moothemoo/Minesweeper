@@ -9,9 +9,9 @@ class Tile
 public:
 	Tile();
 	Tile(unsigned int ID);
+	bool mine = false;
 protected:
 	unsigned int tileID;
-	bool mine = false;
 };
 
 #endif

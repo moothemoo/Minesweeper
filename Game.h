@@ -26,6 +26,7 @@ public:
     unsigned int            width, height;
 
     float speed = 1.0f;
+    bool fallingEdge = true;
     bool firstClick = true;
 
 

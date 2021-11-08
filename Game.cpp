@@ -26,9 +26,9 @@ void Game::Init()
 
     ResourceManager::LoadSpriteSheet("MinesweeperSpriteSheet", 4, 4, "MineSheet");
 
-    camera = Camera2D(4.0f, 4.0f, glm::vec2(0.0f, 0.0f));
+    camera = Camera2D(1.0f, 1.0f, glm::vec2(0.5f, 0.5f));
 
-    map = Map(5, 10, 9, ResourceManager::GetSpriteSheet("MineSheet"), ResourceManager::GetShader("tShader"));
+    map = Map(50, 50, 9, ResourceManager::GetSpriteSheet("MineSheet"), ResourceManager::GetShader("tShader"));
 
 }
 
@@ -64,31 +64,65 @@ void Game::ProcessInput(GLFWwindow* window, float dt)
     camera.Move(position);
     camera.RegenProj();
 
-    if (fallingEdge && (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS))
+    if (prevInput == -1 && (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS))
     {
-        fallingEdge = false;
-        double mouseX, mouseY;
-        glm::vec2 cameraPos = camera.GetPosition();
-        glm::vec2 fov = camera.GetDimensions();
-        glfwGetCursorPos(window, &mouseX, &mouseY);
-       
-        int width, height;
-        glfwGetWindowSize(window, &width, &height);
+        prevInput = GLFW_MOUSE_BUTTON_LEFT;
 
-        mouseX = mouseX / width * fov[0] - fov[0] / 2 + cameraPos[0];
-        mouseY = -mouseY / height * fov[1] + fov[1] / 2 + cameraPos[1];
-
-        if (firstClick)
+        if (State != GAME_LOSE)
         {
-            firstClick = false;
-            map.loadMines(.5, mouseX, mouseY);
-        }
+            double mouseX, mouseY;
+            glm::vec2 cameraPos = camera.GetPosition();
+            glm::vec2 fov = camera.GetDimensions();
+            glfwGetCursorPos(window, &mouseX, &mouseY);
 
-        map.click(mouseX, mouseY);
+            int width, height;
+            glfwGetWindowSize(window, &width, &height);
+
+            mouseX = mouseX / width * fov[0] - fov[0] / 2 + cameraPos[0];
+            mouseY = -mouseY / height * fov[1] + fov[1] / 2 + cameraPos[1];
+
+
+            if (firstClick)
+            {
+                firstClick = false;
+                map.loadMines(.1, mouseX, mouseY);
+            }
+            bool lost;
+            lost = map.click(mouseX, mouseY);
+            if (lost)
+            {
+                State = GAME_LOSE;
+                map.revealMines();
+            }
+        }
     }
-    else if (!fallingEdge && (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE))
+    else if (prevInput == GLFW_MOUSE_BUTTON_LEFT && (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE))
     {
-        fallingEdge = true;
+        prevInput = -1;
+    }
+
+    if (prevInput == -1 && (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS))
+    {
+        if (!firstClick)
+        {
+            prevInput = GLFW_MOUSE_BUTTON_RIGHT;
+            double mouseX, mouseY;
+            glm::vec2 cameraPos = camera.GetPosition();
+            glm::vec2 fov = camera.GetDimensions();
+            glfwGetCursorPos(window, &mouseX, &mouseY);
+
+            int width, height;
+            glfwGetWindowSize(window, &width, &height);
+
+            mouseX = mouseX / width * fov[0] - fov[0] / 2 + cameraPos[0];
+            mouseY = -mouseY / height * fov[1] + fov[1] / 2 + cameraPos[1];
+
+            map.flag(mouseX, mouseY);
+        }
+    }
+    else if (prevInput == GLFW_MOUSE_BUTTON_RIGHT && (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE))
+    {
+        prevInput = -1;
     }
 }
 

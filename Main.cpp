@@ -126,7 +126,7 @@ int main()
         deltaTime = time - prevFrame;
         prevFrame = time;
 
-        //std::cout << 1 / deltaTime << std::endl;
+        std::cout << 1 / deltaTime << std::endl;
 
         // input
         game.ProcessInput(window.window, deltaTime);

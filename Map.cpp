@@ -33,30 +33,68 @@ void Map::loadMines(float difficulty, float firstClickX, float firstClickY)
 	}
 
 	int numMines = (int)(difficulty * width * height);
-	std::vector<bool> mines(width * height, false);
-	for (int i = 0; i < numMines; i++)
+	std::vector<int> mines(width * height, 0);
+	int offset = 0;
+	MineArrayX = std::vector<int>(numMines);
+	MineArrayY = std::vector<int>(numMines);
+	int mineArrayInd = 0;
+	for (int i = 0; i < width * height; i++)
 	{
-		mines[i] = true;
+		mines[i] = i;
 	}
-	std::shuffle(mines.begin(), mines.end(), std::default_random_engine());
+	std::shuffle(mines.begin(), mines.end(), std::default_random_engine(std::time(nullptr)));
 	for (int i = 0; i < width * height; i++)
 	{
 		TileArray[i % width][i / width].mine = mines[i];
+		if (TileArray[i % width][i / width].mine)
+		{
+			MineArrayX[mineArrayInd]   = i % width;
+			MineArrayY[mineArrayInd++] = i / width;
+		}
 	}
 }
 
-void Map::clickWorld(float mouseX, float mouseY)
+bool Map::click(float mouseX, float mouseY)
+{
+	int xLoc, yLoc;
+	renderer.getTile(xLoc, yLoc, mouseX, mouseY); 
+	bool xValid = xLoc >= 0 && xLoc < width;
+	bool yValid = yLoc >= 0 && yLoc < height;
+	if (xValid && yValid && !TileArray[xLoc][yLoc].flagged) 
+	{
+		return this->uncover(xLoc, yLoc);
+	}
+	return false;
+}
+
+void Map::flag(float mouseX, float mouseY)
 {
 	int xLoc, yLoc;
 	renderer.getTile(xLoc, yLoc, mouseX, mouseY);
-	
+	bool xValid = xLoc >= 0 && xLoc < width;
+	bool yValid = yLoc >= 0 && yLoc < height;
+	if (xValid && yValid && !TileArray[xLoc][yLoc].uncovered)
+	{
+		if (TileArray[xLoc][yLoc].flagged)
+		{
+			renderer.setTileTex(9, xLoc, yLoc);
+		}
+		else
+		{
+			renderer.setTileTex(11, xLoc, yLoc);
+		}
+		TileArray[xLoc][yLoc].flagged = !TileArray[xLoc][yLoc].flagged;
+	}
 }
 
-void Map::click(int mouseX, int mouseY)
+
+bool Map::uncover(int xLoc, int yLoc)
 {
-	if (TileArray[mouseX][mouseY].mine)
+	TileArray[xLoc][yLoc].uncovered = true;
+	if (TileArray[xLoc][yLoc].mine)
 	{
-		renderer.setTileTex(10, mouseX, mouseY);
+		renderer.setTileTex(10, xLoc, yLoc);
+		return true;
 	}
 	else
 	{
@@ -65,15 +103,15 @@ void Map::click(int mouseX, int mouseY)
 		{
 			for (int dy = -1; dy <= 1; dy++)
 			{
-				bool xValid = mouseX + dx >= 0 && xLoc + dx < width;
-				bool yValid = mouseY + dy >= 0 && mouseY + dy < height;
-				if (xValid && yValid && TileArray[xLoc + dx][mouseY + dy].mine)
+				bool xValid = xLoc + dx >= 0 && xLoc + dx < width;
+				bool yValid = yLoc + dy >= 0 && yLoc + dy < height;
+				if (xValid && yValid && TileArray[xLoc + dx][yLoc + dy].mine)
 				{
 					numMines++;
 				}
 			}
 		}
-		renderer.setTileTex(numMines, mouseX, mouseY);
+		renderer.setTileTex(numMines, xLoc, yLoc);
 
 		if (numMines == 0)
 		{
@@ -81,18 +119,28 @@ void Map::click(int mouseX, int mouseY)
 			{
 				for (int dy = -1; dy <= 1; dy++)
 				{
-					bool xValid = mouseY + dx >= 0 && xLoc + dx < width;
+					bool xValid = xLoc + dx >= 0 && xLoc + dx < width;
 					bool yValid = yLoc + dy >= 0 && yLoc + dy < height;
-					if (xValid && yValid)
+					if (xValid && yValid && !TileArray[xLoc + dx][yLoc + dy].uncovered)
 					{
+						this->uncover(xLoc + dx, yLoc + dy);
 					}
 				}
 			}
 		}
 	}
+	return false;
 }
 
 void Map::Render(glm::mat4 projection)
 {
 	renderer.drawMap(projection);
+}
+
+void Map::revealMines()
+{
+	for (int i = 0; i < MineArrayX.size(); i++)
+	{
+		this->uncover(MineArrayX[i], MineArrayY[i]);
+	}
 }

@@ -172,6 +172,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="2DRenderer.frag" />
+    <None Include="ClassDiagram.cd" />
     <None Include="default.frag" />
     <None Include="default.vert" />
     <None Include="Hex" />

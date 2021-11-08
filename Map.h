@@ -13,15 +13,19 @@ public:
 
 	void loadMines(float difficulty, float firstClickX, float firstClickY);
 
-	void click(int mouseX, int mouseY);
+	bool uncover(int mouseX, int mouseY);
+	void flag(float mouseX, float mouseY);
+	bool click(float mouseX, float mouseY);
 
-	void clickWorld(float mouseX, float mouseY);
+	void revealMines();
 
 private:
 	std::vector<std::vector<Tile>> TileArray;
+	std::vector<int> MineArrayX;
+	std::vector<int> MineArrayY;
 	unsigned int width, height;
-	float tileWidth = 0.2f;
-	float tileHeight = 0.2f;
+	float tileWidth = 0.05f;
+	float tileHeight = 0.05f;
 	MapRenderer renderer;
 };
 

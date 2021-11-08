@@ -10,7 +10,8 @@
 enum GameState {
     GAME_ACTIVE,
     GAME_MENU,
-    GAME_WIN
+    GAME_WIN,
+    GAME_LOSE
 };
 
 // Game holds all game-related state and functionality.
@@ -26,7 +27,7 @@ public:
     unsigned int            width, height;
 
     float speed = 1.0f;
-    bool fallingEdge = true;
+    GLenum prevInput = NULL;
     bool firstClick = true;
 
 

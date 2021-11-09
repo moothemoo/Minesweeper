@@ -3,14 +3,15 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "MapRenderer.h"
+#include "Map.h"
 #include "Camera2D.h"
 
 // Represents the current state of the game
 enum GameState {
     GAME_ACTIVE,
     GAME_MENU,
-    GAME_WIN
+    GAME_WIN,
+    GAME_LOSE
 };
 
 // Game holds all game-related state and functionality.
@@ -26,12 +27,12 @@ public:
     unsigned int            width, height;
 
     float speed = 1.0f;
+    GLenum prevInput = NULL;
     bool firstClick = true;
 
 
     // constructor/destructor
     Game(unsigned int width, unsigned int height);
-    Game(Map& map, Camera2D& camera);
     ~Game();
     // initialize game state (load all shaders/textures/levels)
     void Init();

@@ -2,13 +2,15 @@
 
 #include <iostream>
 
+int Window::width = 800;
+int Window::height = 800;
 
 Window::Window(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share)
-    :width(width),
-    height(height)
 {
+    Window::width = width;
+    Window::height = height;
     // New window object, width 800, height 600, Titled LearnOpenGL, last two parameters irrelevant
-    window = glfwCreateWindow(width, height, title, monitor, share);
+    window = glfwCreateWindow(Window::width, Window::height, title, monitor, share);
 
     // Catch if window fails to open
     if (window == NULL)
@@ -22,9 +24,9 @@ Window::Window(int width, int height, const char* title, GLFWmonitor* monitor, G
 }
 
 Window::Window(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share, GLFWframebuffersizefun callback)
-    :width(width),
-    height(height)
 {
+    Window::width = width;
+    Window::height = height;
     // New window object, width 800, height 600, Titled LearnOpenGL, last two parameters irrelevant
     window = glfwCreateWindow(width, height, title, monitor, share);
 
@@ -42,7 +44,14 @@ Window::Window(int width, int height, const char* title, GLFWmonitor* monitor, G
 // OpenGL will automatically call this function to resize the window
 void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    glViewport(0, 0, (GLint)width, (GLint)height);
+    if (width < height) 
+    {
+        glViewport(0, 0, (GLint)width, (GLint)width);
+    }
+    else
+    {
+        glViewport(0, 0, (GLint)height, (GLint)height);
+    }
 }
 
 void Window::terminateWindow()

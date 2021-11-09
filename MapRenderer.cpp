@@ -6,31 +6,24 @@
 #include <fstream>
 
 
-MapRenderer::MapRenderer(std::string file, const SpriteSheet& spriteSheet, const Shader& shader)
+MapRenderer::MapRenderer(const SpriteSheet& spriteSheet, const Shader& shader)
 	:_sSheet(&spriteSheet),
 	_Shader(&shader)
 {
-	init(file);
 }
 
-MapRenderer::MapRenderer(std::string file, const SpriteSheet& spriteSheet, const Shader& shader, GLfloat TileWidth, GLfloat TileHeight)
+MapRenderer::MapRenderer(const SpriteSheet& spriteSheet, const Shader& shader, GLfloat TileWidth, GLfloat TileHeight)
 	:_sSheet(&spriteSheet),
 	_Shader(&shader),
 	TileWidth(TileWidth),
 	TileHeight(TileHeight)
 {
-	init(file);
 }
 
 
 const VAO& MapRenderer::getVAO()
 {
 	return _VAO;
-}
-
-const Tile& MapRenderer::getTile(unsigned int x, unsigned int y) const
-{
-	return TileArray[x][y];
 }
 
 
@@ -127,7 +120,44 @@ int MapRenderer::getInt(std::stringstream& stream)
 void MapRenderer::init(std::string file)
 {
 	std::stringstream mapStream = readMapFile(file);
+	this->loadVBO(mapStream);
+}
 
+void MapRenderer::init(std::stringstream mapStream)
+{
+	this->loadVBO(mapStream);
+}
+
+void MapRenderer::init(unsigned int width, unsigned int height, unsigned int defTexID)
+{
+	this->width = width;
+	this->height = height;
+
+	vertexArray = std::vector<GLfloat>(width * height * MapRenderer::NUM_QUAD_COMPONENTS, 0.0f);
+	unsigned int tLoc = 0;
+
+	for (int y = 0; y < height; y++)
+	{
+		for (int x = 0; x < width; x++)
+		{
+			this->genQuad(tLoc, defTexID, x, y);
+		}
+	}
+
+	_VBO = VBO(&vertexArray[0], vertexArray.size() * sizeof(GLfloat), GL_DYNAMIC_DRAW);
+	//std::cout << sizeof(vertexArray);
+
+	_VAO.Bind();
+	_VBO.Bind();
+
+	_VAO.LinkAttrib(_VBO, 0, 4, GL_FLOAT, 4 * sizeof(GLfloat), (void*)0);
+
+	_VAO.Unbind();
+	_VBO.Unbind();
+}
+
+void MapRenderer::loadVBO(std::stringstream& mapStream)
+{
 	mapStream.seekg(0, mapStream.end);
 	int length = mapStream.tellg();
 	mapStream.seekg(0, mapStream.beg);
@@ -137,12 +167,11 @@ void MapRenderer::init(std::string file)
 
 	if (width * height + 8 > length)
 	{
-		std::cout << "EOF exception in MapRenderer file " << file << std::endl;
+		std::cout << "EOF exception in MapRenderer file " << std::endl;
 		assert(false);
 	}
 
 	vertexArray = std::vector<GLfloat>(width * height * MapRenderer::NUM_QUAD_COMPONENTS, 0.0f);
-	TileArray = std::vector<std::vector<Tile>>(width, std::vector<Tile>(height));
 	unsigned int tLoc = 0;
 	unsigned int tID;
 
@@ -151,65 +180,7 @@ void MapRenderer::init(std::string file)
 		for (int x = 0; x < width; x++)
 		{
 			tID = mapStream.get();
-			TileArray[x][y] = Tile(tID);
-
-			GLfloat left, right, top, bottom;
-			_sSheet->GetTexLoc(left, right, top, bottom, tID);
-			//std::cout << left << ", " << right << ", " << top << ", " << bottom << ", " << x << ", " << y << std::endl;
-
-			//Bottom left
-			//Vertex location
-			vertexArray[tLoc++] = TileWidth * x;
-			vertexArray[tLoc++] = TileHeight * y;
-			//Texture location
-			vertexArray[tLoc++] = left;
-			vertexArray[tLoc++] = bottom;
-
-			//Bottom right
-			//Vertex location
-			vertexArray[tLoc++] = TileWidth * (x + 1);
-			vertexArray[tLoc++] = TileHeight * y;
-			//Texture location
-			vertexArray[tLoc++] = right;
-			vertexArray[tLoc++] = bottom;
-
-			//Top left
-			//Vertex location
-			vertexArray[tLoc++] = TileWidth * x;
-			vertexArray[tLoc++] = TileHeight * (y + 1);
-			//Texture location
-			vertexArray[tLoc++] = left;
-			vertexArray[tLoc++] = top;
-
-			//Top right
-			//Vertex location
-			vertexArray[tLoc++] = TileWidth * (x + 1);
-			vertexArray[tLoc++] = TileHeight * (y + 1);
-			//Texture location
-			vertexArray[tLoc++] = right;
-			vertexArray[tLoc++] = top;
-
-			//Top left
-			//Vertex location
-			vertexArray[tLoc++] = TileWidth * x;
-			vertexArray[tLoc++] = TileHeight * (y + 1);
-			//Texture location
-			vertexArray[tLoc++] = left;
-			vertexArray[tLoc++] = top;
-
-			//Bottom right
-			//Vertex location
-			vertexArray[tLoc++] = TileWidth * (x + 1);
-			vertexArray[tLoc++] = TileHeight * y;
-			//Texture location
-			vertexArray[tLoc++] = right;
-			vertexArray[tLoc++] = bottom;
-
-
-			if (tLoc >= vertexArray.size() + 1) {
-				std::cout << "tLoc bad: " << tLoc << ";  vertexArray.size() = " << vertexArray.size() << std::endl;
-				assert(false);
-			}
+			this->genQuad(tLoc, tID, x, y);
 		}
 	}
 
@@ -239,4 +210,66 @@ void MapRenderer::init(std::string file)
 
 	_VAO.Unbind();
 	_VBO.Unbind();
+}
+
+//Side effect: will modify tLoc and vertexArray
+void MapRenderer::genQuad(unsigned int& tLoc, unsigned int tID, int x, int y)
+{
+	GLfloat left, right, top, bottom;
+	_sSheet->GetTexLoc(left, right, top, bottom, tID);
+	//std::cout << left << ", " << right << ", " << top << ", " << bottom << ", " << x << ", " << y << std::endl;
+
+	//Bottom left
+	//Vertex location
+	vertexArray[tLoc++] = TileWidth * x;
+	vertexArray[tLoc++] = TileHeight * y;
+	//Texture location
+	vertexArray[tLoc++] = left;
+	vertexArray[tLoc++] = bottom;
+
+	//Bottom right
+	//Vertex location
+	vertexArray[tLoc++] = TileWidth * (x + 1);
+	vertexArray[tLoc++] = TileHeight * y;
+	//Texture location
+	vertexArray[tLoc++] = right;
+	vertexArray[tLoc++] = bottom;
+
+	//Top left
+	//Vertex location
+	vertexArray[tLoc++] = TileWidth * x;
+	vertexArray[tLoc++] = TileHeight * (y + 1);
+	//Texture location
+	vertexArray[tLoc++] = left;
+	vertexArray[tLoc++] = top;
+
+	//Top right
+	//Vertex location
+	vertexArray[tLoc++] = TileWidth * (x + 1);
+	vertexArray[tLoc++] = TileHeight * (y + 1);
+	//Texture location
+	vertexArray[tLoc++] = right;
+	vertexArray[tLoc++] = top;
+
+	//Top left
+	//Vertex location
+	vertexArray[tLoc++] = TileWidth * x;
+	vertexArray[tLoc++] = TileHeight * (y + 1);
+	//Texture location
+	vertexArray[tLoc++] = left;
+	vertexArray[tLoc++] = top;
+
+	//Bottom right
+	//Vertex location
+	vertexArray[tLoc++] = TileWidth * (x + 1);
+	vertexArray[tLoc++] = TileHeight * y;
+	//Texture location
+	vertexArray[tLoc++] = right;
+	vertexArray[tLoc++] = bottom;
+
+
+	if (tLoc >= vertexArray.size() + 1) {
+		std::cout << "tLoc bad: " << tLoc << ";  vertexArray.size() = " << vertexArray.size() << std::endl;
+		assert(false);
+	}
 }

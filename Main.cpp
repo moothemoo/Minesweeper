@@ -114,7 +114,11 @@ int main()
     int tX, tY;
     bool validTile;
 
-    Map map("Hex", sSheet, tShader, 1.0f, 1.0f);
+    MapRenderer map(sSheet, tShader, 1.0f, 1.0f);
+    map.init("Hex");
+
+    Game game = Game(width, height);
+    game.Init();
 
     Game game = Game(width, height);
     game.Init();
@@ -125,7 +129,7 @@ int main()
         deltaTime = time - prevFrame;
         prevFrame = time;
 
-        //std::cout << 1 / deltaTime << std::endl;
+        std::cout << 1 / deltaTime << std::endl;
 
         // input
         game.ProcessInput(window.window, deltaTime);

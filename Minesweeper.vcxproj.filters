@@ -75,6 +75,9 @@
     <ClCompile Include="SpriteSheet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="default.vert">
@@ -95,6 +98,7 @@
     <None Include="TileRenderer.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -139,6 +143,9 @@
     <ClInclude Include="SpriteSheet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Map.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="2DRenderer.vert">
@@ -147,6 +154,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="MinesweeperSpriteSheet.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="Bing.png">
       <Filter>Resource Files\Textures</Filter>
     </Image>
   </ItemGroup>

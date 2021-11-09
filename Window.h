@@ -18,11 +18,12 @@ public:
 	void clearScreen();
 	void newFrame();
 
-	int width;
-	int height;
 
 private:
 	float bgCol[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+	static int width;
+	static int height;
 };
 
 #endif

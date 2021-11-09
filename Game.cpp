@@ -11,26 +11,24 @@ Game::Game(unsigned int width, unsigned int height)
 
 }
 
-Game::Game(Map& map, Camera2D& camera)
-    : State(GAME_ACTIVE),
-    Keys(),
-    mPosX(), mPosY(),
-    camera(camera),
-    map(map)
+Game::~Game()
 {
     
 }
 
 void Game::Init()
 {
+    ResourceManager::LoadShader("2DRenderer.vert", "2DRenderer.frag", nullptr, "shader");
+    ResourceManager::LoadShader("TileRenderer.vert", "TileRenderer.frag", nullptr, "tShader");
 
     ResourceManager::LoadTexture("Bing.png", true, "Doggo");
     ResourceManager::LoadTexture("MinesweeperSpriteSheet.png", true, "MinesweeperSpriteSheet");
 
-void Game::Init()
-{
-    Shader shader = ResourceManager::LoadShader("2DRenderer.vert", "2DRenderer.frag", nullptr, "test");
-    Shader tShader = ResourceManager::LoadShader("TileRenderer.vert", "TileRenderer.frag", nullptr, "tile");
+    ResourceManager::LoadSpriteSheet("MinesweeperSpriteSheet", 4, 4, "MineSheet");
+
+    camera = Camera2D(1.0f, 1.0f, glm::vec2(0.5f, 0.5f));
+
+    map = Map(50, 50, 9, ResourceManager::GetSpriteSheet("MineSheet"), ResourceManager::GetShader("tShader"));
 
 }
 
@@ -63,12 +61,44 @@ void Game::ProcessInput(GLFWwindow* window, float dt)
     {
         position[0] += speed * dt;
     }
-
     camera.Move(position);
+    camera.RegenProj();
 
-    if (firstClick && (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS))
+    if (prevInput == -1 && (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS))
     {
-        firstClick = false;
+        prevInput = GLFW_MOUSE_BUTTON_LEFT;
+
+        if (State != GAME_LOSE)
+        {
+            double mouseX, mouseY;
+            glm::vec2 cameraPos = camera.GetPosition();
+            glm::vec2 fov = camera.GetDimensions();
+            glfwGetCursorPos(window, &mouseX, &mouseY);
+
+            int width, height;
+            glfwGetWindowSize(window, &width, &height);
+
+            mouseX = mouseX / width * fov[0] - fov[0] / 2 + cameraPos[0];
+            mouseY = -mouseY / height * fov[1] + fov[1] / 2 + cameraPos[1];
+
+
+            if (firstClick)
+            {
+                firstClick = false;
+                map.loadMines(.1, mouseX, mouseY);
+            }
+            bool lost;
+            lost = map.click(mouseX, mouseY);
+            if (lost)
+            {
+                State = GAME_LOSE;
+                map.revealMines();
+            }
+        }
+    }
+    else if (prevInput == GLFW_MOUSE_BUTTON_LEFT && (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE))
+    {
+        prevInput = -1;
     }
 
     if (prevInput == -1 && (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS))
@@ -98,5 +128,5 @@ void Game::ProcessInput(GLFWwindow* window, float dt)
 
 void Game::Render()
 {
-
+    map.Render(camera.GetProjection());
 }

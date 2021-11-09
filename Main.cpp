@@ -17,8 +17,9 @@
 #include"Window.h"
 #include"Renderer.h"
 #include"TileRenderer.h"
-#include"Map.h"
+#include"MapRenderer.h"
 #include"Tile.h"
+#include"Game.h"
 
 // Prototypes
 void processInput(GLFWwindow* window, float dt);
@@ -48,7 +49,7 @@ int main()
     
     // New window object, width 800, height 600, Titled LearnOpenGL, last two parameters irrelevant
     Window window = Window(width, height, "Window", NULL, NULL);
-    //glfwSetCursorPosCallback(window.window, mouse_callback);
+    glfwSetCursorPosCallback(window.window, mouse_callback);
 
 
     // Initialize GLAD and returns error if fails
@@ -115,6 +116,9 @@ int main()
 
     Map map("Hex", sSheet, tShader, 1.0f, 1.0f);
 
+    Game game = Game(width, height);
+    game.Init();
+
     while (!glfwWindowShouldClose(window.window))
     {
         time = glfwGetTime();
@@ -124,38 +128,15 @@ int main()
         //std::cout << 1 / deltaTime << std::endl;
 
         // input
-        processInput(window.window, deltaTime);
+        game.ProcessInput(window.window, deltaTime);
 
-        if (regenProj)
-        {
-            camera.SetPosition(position);
-        }
-
-        // Redraws Background, starts shader, sets VAO1 to active vertex array object, and draws
-        camera.SetPosition(position);
-        window.clearScreen();
-
-        camera.Matrix(tShader, "camera");
-
-        map.drawMap();
-
-        camera.Matrix(shader, "camera");
-
-        renderer.drawSprite(
-            doggo,
-            glm::vec2(mPosX, mPosY) + position,
-            glfwGetTime() * 90,
-            glm::vec2(0.10f, 0.1f),
-            glm::vec3(1.0f)
-            );
-
-
-        validTile = map.getTile(tX, tY, mPosX + position[0], mPosY + position[1]);
+        game.Render();
 
         //std::cout << tX << ", " << tY << ",     " << validTile << std::endl;
 
         // Swaps back buffer and front buffer
         window.newFrame();
+        window.clearScreen();
         // Checks for keyboard or mouse events
         glfwPollEvents();
         //Sleep((long)(frameTime - deltaTime));

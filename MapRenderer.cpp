@@ -1,4 +1,4 @@
-#include "Map.h"
+#include "MapRenderer.h"
 
 
 #include <iostream>
@@ -6,14 +6,14 @@
 #include <fstream>
 
 
-Map::Map(std::string file, const SpriteSheet& spriteSheet, const Shader& shader)
+MapRenderer::MapRenderer(std::string file, const SpriteSheet& spriteSheet, const Shader& shader)
 	:_sSheet(&spriteSheet),
 	_Shader(&shader)
 {
 	init(file);
 }
 
-Map::Map(std::string file, const SpriteSheet& spriteSheet, const Shader& shader, GLfloat TileWidth, GLfloat TileHeight)
+MapRenderer::MapRenderer(std::string file, const SpriteSheet& spriteSheet, const Shader& shader, GLfloat TileWidth, GLfloat TileHeight)
 	:_sSheet(&spriteSheet),
 	_Shader(&shader),
 	TileWidth(TileWidth),
@@ -23,18 +23,18 @@ Map::Map(std::string file, const SpriteSheet& spriteSheet, const Shader& shader,
 }
 
 
-const VAO& Map::getVAO()
+const VAO& MapRenderer::getVAO()
 {
 	return _VAO;
 }
 
-const Tile& Map::getTile(unsigned int x, unsigned int y) const
+const Tile& MapRenderer::getTile(unsigned int x, unsigned int y) const
 {
 	return TileArray[x][y];
 }
 
 
-bool Map::getTile(int& xLoc, int& yLoc, float mouseX, float mouseY)
+bool MapRenderer::getTile(int& xLoc, int& yLoc, float mouseX, float mouseY)
 {
 	xLoc = (int)std::floor((float) mouseX / TileWidth);
 	yLoc = (int)std::floor((float) mouseY / TileHeight);
@@ -42,14 +42,14 @@ bool Map::getTile(int& xLoc, int& yLoc, float mouseX, float mouseY)
 	return (xLoc >= 0 && xLoc < width&& yLoc >= 0 && yLoc < height);
 }
 
-void Map::setTileTex(unsigned int texID, int xLoc, int yLoc)
+void MapRenderer::setTileTex(unsigned int texID, int xLoc, int yLoc)
 {
 	GLfloat left, right, top, bottom;
 	_sSheet->GetTexLoc(left, right, top, bottom, texID);
 
 	//std::cout << left << ", " << right << ", " << top << ", " << bottom << std::endl;
 
-	int quadLoc = (xLoc + yLoc * width) * Map::NUM_QUAD_COMPONENTS;
+	int quadLoc = (xLoc + yLoc * width) * MapRenderer::NUM_QUAD_COMPONENTS;
 
 	_VBO.Bind();
 
@@ -81,24 +81,26 @@ void Map::setTileTex(unsigned int texID, int xLoc, int yLoc)
 	glUnmapBuffer(GL_ARRAY_BUFFER);
 
 
-	/*ptr = (GLfloat*)glMapBufferRange(GL_ARRAY_BUFFER, (GLintptr)quadLoc, Map::NUM_QUAD_COMPONENTS, GL_MAP_READ_BIT);
-	for (int i = 0; i < Map::NUM_QUAD_COMPONENTS; i++)
+	/*ptr = (GLfloat*)glMapBufferRange(GL_ARRAY_BUFFER, (GLintptr)quadLoc, MapRenderer::NUM_QUAD_COMPONENTS, GL_MAP_READ_BIT);
+	for (int i = 0; i < MapRenderer::NUM_QUAD_COMPONENTS; i++)
 	{
 		std::cout << ptr[i] << ", ";
 	}
 	glUnmapBuffer(GL_ARRAY_BUFFER);*/
 }
 
-void Map::drawMap() const
+void MapRenderer::drawMap(glm::mat4 projection) const
 {
 	_Shader->Use();
 	_VAO.Bind();
 	_sSheet->getTex().Bind(); //bind texture
 
+	_Shader->SetMatrix4("camera", projection);
+
 	glDrawArrays(GL_TRIANGLES, 0, width * height * 6); //width * height = numQuads
 }
 
-std::stringstream Map::readMapFile(std::string file)
+std::stringstream MapRenderer::readMapFile(std::string file)
 {
 	std::stringstream stream;
 	try
@@ -108,12 +110,12 @@ std::stringstream Map::readMapFile(std::string file)
 	}
 	catch (std::exception e)
 	{
-		std::cout << "ERROR::MAP: Failed to find load file" << file << std::endl;
+		std::cout << "ERROR::MapRenderer: Failed to find load file" << file << std::endl;
 	}
 	return stream;
 }
 
-int Map::getInt(std::stringstream& stream)
+int MapRenderer::getInt(std::stringstream& stream)
 {
 	int out = (stream.get() << 24);
 	out = out | (stream.get() << 16);
@@ -122,7 +124,7 @@ int Map::getInt(std::stringstream& stream)
 	return out;
 }
 
-void Map::init(std::string file)
+void MapRenderer::init(std::string file)
 {
 	std::stringstream mapStream = readMapFile(file);
 
@@ -135,11 +137,11 @@ void Map::init(std::string file)
 
 	if (width * height + 8 > length)
 	{
-		std::cout << "EOF exception in map file " << file << std::endl;
+		std::cout << "EOF exception in MapRenderer file " << file << std::endl;
 		assert(false);
 	}
 
-	vertexArray = std::vector<GLfloat>(width * height * Map::NUM_QUAD_COMPONENTS, 0.0f);
+	vertexArray = std::vector<GLfloat>(width * height * MapRenderer::NUM_QUAD_COMPONENTS, 0.0f);
 	TileArray = std::vector<std::vector<Tile>>(width, std::vector<Tile>(height));
 	unsigned int tLoc = 0;
 	unsigned int tID;

@@ -1,5 +1,5 @@
-#ifndef MAP_H
-#define MAP_H
+#ifndef MAP_RENDERER_H
+#define MAP_RENDERER_H
 
 #include "Tile.h"
 #include "TileRenderer.h"
@@ -10,21 +10,20 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-class Map
+class MapRenderer
 {
 public:
 
-	Map() {}
-	Map(std::string file, const SpriteSheet& spriteSheet, const Shader& shader);
-	Map(std::string file, const SpriteSheet& spriteSheet, const Shader& shader, GLfloat TileWidth, GLfloat TileHeight);
-	Map(std::string file, const SpriteSheet& spriteSheet, const Shader& shader, GLfloat TileWidth, GLfloat TileHeight);
+	MapRenderer() {}
+	MapRenderer(std::string file, const SpriteSheet& spriteSheet, const Shader& shader);
+	MapRenderer(std::string file, const SpriteSheet& spriteSheet, const Shader& shader, GLfloat TileWidth, GLfloat TileHeight);
 
 
 	const Tile& getTile(unsigned int x, unsigned int y) const;
 	bool getTile(int& xLoc, int& yLoc, float mouseX, float mouseY);
 	void setTileTex(unsigned int texID, int xLoc, int yLoc);
 
-	void drawMap() const;
+	void drawMap(glm::mat4 projection) const;
 
 	const VAO& getVAO();
 

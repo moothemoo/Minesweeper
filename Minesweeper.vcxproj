@@ -156,7 +156,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Map.cpp" />
+    <ClCompile Include="MapRenderer.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -181,7 +181,7 @@
     <ClInclude Include="Camera2D.h" />
     <ClInclude Include="EBO.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="Map.h" />
+    <ClInclude Include="MapRenderer.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="SpriteSheet.h" />
     <ClInclude Include="Tile.h" />

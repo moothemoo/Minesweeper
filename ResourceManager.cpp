@@ -7,8 +7,9 @@
 #include <stb/stb_image.h>
 
 // Instantiate static variables
-std::map<std::string, Texture2D>    ResourceManager::Textures;
-std::map<std::string, Shader>       ResourceManager::Shaders;
+std::map<std::string, Texture2D>     ResourceManager::Textures;
+std::map<std::string, Shader>        ResourceManager::Shaders;
+std::map<std::string, SpriteSheet>   ResourceManager::SpriteSheets;
 
 
 const Shader & ResourceManager::LoadShader(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile, std::string name)
@@ -31,6 +32,17 @@ const Texture2D & ResourceManager::LoadTexture(const char* file, bool alpha, std
 const Texture2D & ResourceManager::GetTexture(std::string name)
 {
     return Textures[name];
+}
+
+const SpriteSheet& ResourceManager::LoadSpriteSheet(const char* texName, unsigned int numTexWidth, unsigned int numTexHeight, std::string name)
+{
+    SpriteSheets[name] = SpriteSheet(numTexWidth, numTexHeight, ResourceManager::GetTexture(texName));
+    return SpriteSheets[name];
+}
+
+const SpriteSheet& ResourceManager::GetSpriteSheet(std::string name)
+{
+    return SpriteSheets[name];
 }
 
 void ResourceManager::Clear()

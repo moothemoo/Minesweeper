@@ -21,8 +21,7 @@ public:
 
 private:
 	std::vector<std::vector<Tile>> TileArray;
-	std::vector<int> MineArrayX;
-	std::vector<int> MineArrayY;
+	std::vector<int> MineArray;
 	unsigned int width, height;
 	float tileWidth = 0.05f;
 	float tileHeight = 0.05f;

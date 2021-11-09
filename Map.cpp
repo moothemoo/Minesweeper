@@ -26,31 +26,58 @@ int getInt(std::stringstream& stream)
 
 void Map::loadMines(float difficulty, float firstClickX, float firstClickY)
 {
-	std::cout << "e" << std::endl;
-	if (difficulty > 1)
+	if (difficulty * width * height + 9 > width * height)
 	{
 		assert(false);
 	}
 
 	int numMines = (int)(difficulty * width * height);
-	std::vector<int> mines(width * height, 0);
 	int offset = 0;
-	MineArrayX = std::vector<int>(numMines);
-	MineArrayY = std::vector<int>(numMines);
-	int mineArrayInd = 0;
-	for (int i = 0; i < width * height; i++)
+	MineArray = std::vector<int>(numMines);
+	std::vector<int> safeTiles;
+	int offset = 0;
+
+	for (int dx = -1; dx <= 1; dx++)
 	{
-		mines[i] = i;
-	}
-	std::shuffle(mines.begin(), mines.end(), std::default_random_engine(std::time(nullptr)));
-	for (int i = 0; i < width * height; i++)
-	{
-		TileArray[i % width][i / width].mine = mines[i];
-		if (TileArray[i % width][i / width].mine)
+		for (int dy = -1; dy <= 1; dy++)
 		{
-			MineArrayX[mineArrayInd]   = i % width;
-			MineArrayY[mineArrayInd++] = i / width;
+			bool xValid = firstClickX + dx >= 0 && firstClickX + dx < width;
+			bool yValid = firstClickY + dy >= 0 && firstClickY + dy < height;
+			if (xValid && yValid)
+			{
+				safeTiles.push_back((firstClickY + dy) * height + firstClickX + dx);
+			}
 		}
+	}
+
+	std::vector<int> mines(width * height - safeTiles.size());
+	int x, y;
+	bool xSafe, ySafe;
+	for (int i = 0; i < width * height; i++)
+	{
+		if(safeTiles.)
+		mines[i-offset] = i;
+	}
+	
+	for (int dx = -1; dx <= 1; dx++)
+	{
+		for (int dy = -1; dy <= 1; dy++)
+		{
+			bool xValid = firstClickX + dx >= 0 && firstClickX + dx < width;
+			bool yValid = firstClickY + dy >= 0 && firstClickY + dy < height;
+			if (xValid && yValid)
+			{
+				mines[firstClickY * width + firstClickX] = -1;
+			}
+		}
+	}
+
+	std::shuffle(mines.begin(), mines.end(), std::default_random_engine(std::time(nullptr)));
+	for (int i = 0; i < numMines; i++)
+	{
+		TileArray[mines[i] % width][mines[i] / width].mine = true;
+		MineArray[i] = mines[i];
+		//std::cout << mines[i] << std::endl;
 	}
 }
 
@@ -139,8 +166,8 @@ void Map::Render(glm::mat4 projection)
 
 void Map::revealMines()
 {
-	for (int i = 0; i < MineArrayX.size(); i++)
+	for (int i = 0; i < MineArray.size(); i++)
 	{
-		this->uncover(MineArrayX[i], MineArrayY[i]);
+		this->uncover(MineArray[i] % width, MineArray[i] / width);
 	}
 }

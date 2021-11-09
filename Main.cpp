@@ -120,16 +120,13 @@ int main()
     Game game = Game(width, height);
     game.Init();
 
-    Game game = Game(width, height);
-    game.Init();
-
     while (!glfwWindowShouldClose(window.window))
     {
         time = glfwGetTime();
         deltaTime = time - prevFrame;
         prevFrame = time;
 
-        std::cout << 1 / deltaTime << std::endl;
+        //std::cout << 1 / deltaTime << std::endl;
 
         // input
         game.ProcessInput(window.window, deltaTime);

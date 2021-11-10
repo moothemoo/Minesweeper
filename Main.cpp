@@ -146,6 +146,7 @@ int main()
     // Cleaning
     shader.Delete();
     tShader.Delete();
+    ResourceManager::Clear();
 
     // Delete window
     window.terminateWindow();

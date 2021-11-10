@@ -31,52 +31,51 @@ void Map::loadMines(float difficulty, float firstClickX, float firstClickY)
 		assert(false);
 	}
 
-	int numMines = (int)(difficulty * width * height);
-	int offset = 0;
-	MineArray = std::vector<int>(numMines);
-	std::vector<int> safeTiles;
-	int offset = 0;
-
-	for (int dx = -1; dx <= 1; dx++)
+	int xLoc, yLoc;
+	renderer.getTile(xLoc, yLoc, firstClickX, firstClickY);
+	bool xValid = xLoc >= 0 && xLoc < width;
+	bool yValid = yLoc >= 0 && yLoc < height;
+	if (!(xValid && yValid))
 	{
-		for (int dy = -1; dy <= 1; dy++)
-		{
-			bool xValid = firstClickX + dx >= 0 && firstClickX + dx < width;
-			bool yValid = firstClickY + dy >= 0 && firstClickY + dy < height;
-			if (xValid && yValid)
-			{
-				safeTiles.push_back((firstClickY + dy) * height + firstClickX + dx);
-			}
-		}
+		return;
 	}
 
-	std::vector<int> mines(width * height - safeTiles.size());
-	int x, y;
-	bool xSafe, ySafe;
+	int numMines = (int)(difficulty * width * height);
+	MineArray = std::vector<int>(numMines);
+	std::vector<int> mines(width * height);
+	
+
 	for (int i = 0; i < width * height; i++)
 	{
-		if(safeTiles.)
-		mines[i-offset] = i;
-	}
-	
-	for (int dx = -1; dx <= 1; dx++)
-	{
-		for (int dy = -1; dy <= 1; dy++)
-		{
-			bool xValid = firstClickX + dx >= 0 && firstClickX + dx < width;
-			bool yValid = firstClickY + dy >= 0 && firstClickY + dy < height;
-			if (xValid && yValid)
-			{
-				mines[firstClickY * width + firstClickX] = -1;
-			}
-		}
+		mines[i] = i;
 	}
 
 	std::shuffle(mines.begin(), mines.end(), std::default_random_engine(std::time(nullptr)));
-	for (int i = 0; i < numMines; i++)
+
+	int offset = 0;
+	int x, y;
+	bool xSafe, ySafe;
+
+	std::cout << firstClickX << ", " << firstClickY << std::endl;
+
+	for (int i = 0; i < numMines + offset; i++)
 	{
-		TileArray[mines[i] % width][mines[i] / width].mine = true;
-		MineArray[i] = mines[i];
+		x = mines[i] % width;
+		y = mines[i] / width;
+		xSafe = (x <= xLoc + 1) && (x >= xLoc - 1);
+		ySafe = (y <= yLoc + 1) && (y >= yLoc - 1);
+		if (xSafe && ySafe)
+		{
+			offset++;
+			std::cout << x << ", " << y << std::endl;
+			assert(offset < 9);
+		}
+		else
+		{
+			TileArray[x][y].mine = true;
+			MineArray[i - offset] = mines[i - offset];
+		}
+		
 		//std::cout << mines[i] << std::endl;
 	}
 }

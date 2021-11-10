@@ -24,7 +24,7 @@
   <Class Name="Map">
     <Position X="8.5" Y="4.75" Width="7.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAABAAIAQARIAAAAAAAAAgAAAAAhACAAwAgEE=</HashCode>
+      <HashCode>AAAAAAAAABAAIAQARIAAAAAAAAAgAAAAAhACAAgAgEE=</HashCode>
       <FileName>Map.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -64,7 +64,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Window">
-    <Position X="0.5" Y="4.75" Width="7.75" />
+    <Position X="0.5" Y="31" Width="7.75" />
     <TypeIdentifier>
       <HashCode>AEAAAAAAABAAAAQAQIAAAAAgAAAACAAIAAAECAAACAA=</HashCode>
       <FileName>Window.h</FileName>

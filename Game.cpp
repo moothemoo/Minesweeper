@@ -85,7 +85,7 @@ void Game::ProcessInput(GLFWwindow* window, float dt)
             if (firstClick)
             {
                 firstClick = false;
-                map.loadMines(.2, mouseX, mouseY);
+                map.loadMines(.4, mouseX, mouseY);
             }
             bool lost;
             lost = map.click(mouseX, mouseY);

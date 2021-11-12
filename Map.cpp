@@ -56,7 +56,7 @@ void Map::loadMines(float difficulty, float firstClickX, float firstClickY)
 	int x, y;
 	bool xSafe, ySafe;
 
-	std::cout << firstClickX << ", " << firstClickY << std::endl;
+	//std::cout << firstClickX << ", " << firstClickY << std::endl;
 
 	for (int i = 0; i < numMines + offset; i++)
 	{
@@ -67,7 +67,7 @@ void Map::loadMines(float difficulty, float firstClickX, float firstClickY)
 		if (xSafe && ySafe)
 		{
 			offset++;
-			std::cout << x << ", " << y << std::endl;
+			//std::cout << x << ", " << y << std::endl;
 			assert(offset < 9);
 		}
 		else

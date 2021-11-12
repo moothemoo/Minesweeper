@@ -17,7 +17,7 @@ public:
 	const Texture2D& getTex() const;
 protected:
 	unsigned int numSpritesX, numSpritesY;
-	const Texture2D* texture;
+	const Texture2D* texture; //Texture ref
 };
 
 #endif

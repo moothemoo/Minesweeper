@@ -120,6 +120,7 @@ int main()
     Game game = Game(width, height);
     game.Init();
 
+
     while (!glfwWindowShouldClose(window.window))
     {
         time = glfwGetTime();
@@ -140,7 +141,6 @@ int main()
         window.clearScreen();
         // Checks for keyboard or mouse events
         glfwPollEvents();
-        //Sleep((long)(frameTime - deltaTime));
     }
 
     // Cleaning

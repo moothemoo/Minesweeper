@@ -1,37 +1,98 @@
 #include"Renderer.h"
-
-SpriteRenderer::SpriteRenderer(Shader& shader, GLfloat* vertices, unsigned int vertSizeBytes, GLuint* indices, unsigned int indexSizeBytes)
-    : _Shader(shader), 
-    indSize(indexSizeBytes/sizeof(GLfloat)), 
-    _VBO(vertices, vertSizeBytes),
-    _EBO(indices, indexSizeBytes)
+Renderer::Renderer(const Shader& shader)
+    : _Shader(&shader)
 {
-	_VAO.Bind();
-    _VBO.Bind();
-    _EBO.Bind();
-
-    _VAO.LinkAttrib(_VBO, 0, 4, GL_FLOAT, 4 * sizeof(float), (void*)0);
-
-    _VAO.Unbind();
-    _VBO.Unbind();
-    _EBO.Unbind();
 }
 
-
-void SpriteRenderer::drawSprite(Texture2D& tex, glm::vec2 loc, float angle, glm::vec2 scale, glm::vec3 color)
+GLuint Renderer::GetUniformLoc(const char* name)
 {
-    _Shader.Use();
-    _VAO.Bind();
-    tex.Bind();
-
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(loc, 0.0f));
-    model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
-    model = glm::scale(model, glm::vec3(scale, 1.0f));
-    
-    _Shader.SetMatrix4("model", model);
-    _Shader.SetVector3f("color", color);
-
-    glDrawElements(GL_TRIANGLES, indSize, GL_UNSIGNED_INT, 0);
+    cacheItr = uniformCache.find(name);
+    if (cacheItr == uniformCache.end())
+    {
+        uniformCache[name] = glGetUniformLocation(_Shader->ID, name);
+        return uniformCache[name];
+    }
+    return cacheItr->second;
 }
 
+void Renderer::SetUniforms(bool useShader = false)
+{
+	floatItr = floatUniforms.begin();
+
+}
+
+#pragma region Uniform Loaders
+void Renderer::LoadFloat(GLuint location, float value)
+{
+	floatUniforms[location] = value;
+}
+void Renderer::LoadInt(GLuint location, int value)
+{
+	intUniforms[location] = value;
+}
+void Renderer::LoadVec2f(GLuint location, float x, float y)
+{
+	this->LoadVec2f(location, glm::vec2(x, y));
+}
+void Renderer::LoadVec2f(GLuint location, const glm::vec2& value)
+{
+	vec2Uniforms[location] = value;
+}
+void Renderer::LoadVec3f(GLuint location, float x, float y, float z)
+{
+	this->LoadVec3f(location, glm::vec3(x, y, z));
+}
+void Renderer::LoadVec3f(GLuint location, const glm::vec3& value)
+{
+	vec3Uniforms[location] = value;
+}
+void Renderer::LoadVec4f(GLuint location, float x, float y, float z, float w)
+{
+	this->LoadVec4f(location, glm::vec4(x, y, z, w));
+}
+void Renderer::LoadVec4f(GLuint location, const glm::vec4& value)
+{
+	vec4Uniforms[location] = value;
+}
+void Renderer::LoadMat4(GLuint location, const glm::mat4& matrix)
+{
+	mat4Uniforms[location] = matrix;
+}
+
+void Renderer::LoadFloat(const char* name, float value)
+{
+	LoadFloat(this->GetUniformLoc(name), value);
+}
+void Renderer::LoadInt(const char* name, int value)
+{
+	LoadFloat(this->GetUniformLoc(name), value);
+}
+void Renderer::LoadVec2f(const char* name, float x, float y)
+{
+	LoadVec2f(this->GetUniformLoc(name), glm::vec2(x, y));
+}
+void Renderer::LoadVec2f(const char* name, const glm::vec2& value)
+{
+	LoadVec2f(this->GetUniformLoc(name), value);
+}
+void Renderer::LoadVec3f(const char* name, float x, float y, float z)
+{
+	LoadVec2f(this->GetUniformLoc(name), glm::vec3(x, y, z));
+}
+void Renderer::LoadVec3f(const char* name, const glm::vec3& value)
+{
+	LoadVec3f(this->GetUniformLoc(name), value);
+}
+void Renderer::LoadVec4f(const char* name, float x, float y, float z, float w)
+{
+	LoadVec4f(this->GetUniformLoc(name), glm::vec4(x, y, z, w));
+}
+void Renderer::LoadVec4f(const char* name, const glm::vec4& value)
+{
+	LoadVec4f(this->GetUniformLoc(name), value);
+}
+void Renderer::LoadMat4(const char* name, const glm::mat4& matrix)
+{
+	LoadMat4(this->GetUniformLoc(name), matrix);
+}
+#pragma endregion

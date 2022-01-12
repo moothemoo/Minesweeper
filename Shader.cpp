@@ -42,16 +42,6 @@ void Shader::Compile(const char* vertexSource, const char* fragmentSource, const
         glDeleteShader(gShader);
 }
 
-GLuint Shader::GetUniformLoc(const char* name)
-{
-    std::map < std::string, GLuint>::iterator itr = uniformCache.find(name);
-    if (itr == uniformCache.end())
-    {
-        uniformCache[name] = glGetUniformLocation(this->ID, name);
-        return uniformCache[name];
-    }
-    return itr->second;
-}
 
 void Shader::SetFloat(const char* name, float value, bool useShader) const
 {
@@ -107,10 +97,69 @@ void Shader::SetMatrix4(const char* name, const glm::mat4& matrix, bool useShade
         this->Use();
     glUniformMatrix4fv(glGetUniformLocation(this->ID, name), 1, false, glm::value_ptr(matrix));
 }
+
+void Shader::SetFloat(const GLuint location, float value, bool useShader) const
+{
+    if (useShader)
+        this->Use();
+    glUniform1f(location, value);
+}
+void Shader::SetInteger(const GLuint location, int value, bool useShader) const
+{
+    if (useShader)
+        this->Use();
+    glUniform1i(location, value);
+}
+void Shader::SetVector2f(const GLuint location, float x, float y, bool useShader) const
+{
+    if (useShader)
+        this->Use();
+    glUniform2f(location, x, y);
+}
+void Shader::SetVector2f(const GLuint location, const glm::vec2& value, bool useShader) const
+{
+    if (useShader)
+        this->Use();
+    glUniform2f(location, value.x, value.y);
+}
+void Shader::SetVector3f(const GLuint location, float x, float y, float z, bool useShader) const
+{
+    if (useShader)
+        this->Use();
+    glUniform3f(location, x, y, z);
+}
+void Shader::SetVector3f(const GLuint location, const glm::vec3& value, bool useShader) const
+{
+    if (useShader)
+        this->Use();
+    glUniform3f(location, value.x, value.y, value.z);
+}
+void Shader::SetVector4f(const GLuint location, float x, float y, float z, float w, bool useShader) const
+{
+    if (useShader)
+        this->Use();
+    glUniform4f(location, x, y, z, w);
+}
+void Shader::SetVector4f(const GLuint location, const glm::vec4& value, bool useShader) const
+{
+    if (useShader)
+        this->Use();
+    glUniform4f(location, value.x, value.y, value.z, value.w);
+}
+void Shader::SetMatrix4(const GLuint location, const glm::mat4& matrix, bool useShader) const
+{
+    if (useShader)
+        this->Use();
+    glUniformMatrix4fv(location, 1, false, glm::value_ptr(matrix));
+}
+
+
+
 void Shader::Delete()
 {
     glDeleteProgram(this->ID);
 }
+
 
 
 void Shader::checkCompileErrors(unsigned int object, std::string type)

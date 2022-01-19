@@ -25,7 +25,11 @@ public:
     // compiles the shader from given source code
     void    Compile(const char* vertexSource, const char* fragmentSource, const char* geometrySource = nullptr); // note: geometry source code is optional 
 
+
     // utility functions
+
+    GLuint getUniformLoc(const char* name);
+    
     void    SetFloat(const char* name, float value, bool useShader = false) const;
     void    SetInteger(const char* name, int value, bool useShader = false) const;
     void    SetVector2f(const char* name, float x, float y, bool useShader = false) const;

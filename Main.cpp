@@ -83,7 +83,7 @@ int main()
     Shader tShader = ResourceManager::LoadShader("TileRenderer.vert", "TileRenderer.frag", nullptr, "tile");
 
     //Sets up vertex and element objects
-    SpriteRenderer renderer(shader, vertices, sizeof(vertices), indices, sizeof(indices));
+    //Renderer renderer(shader, vertices, sizeof(vertices), indices, sizeof(indices));
 
     // Specify color 
     // Clean back buffer and assign new color to it

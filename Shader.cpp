@@ -42,7 +42,7 @@ void Shader::Compile(const char* vertexSource, const char* fragmentSource, const
         glDeleteShader(gShader);
 }
 
-
+#pragma region Set Uniform with name
 void Shader::SetFloat(const char* name, float value, bool useShader) const
 {
     if (useShader)
@@ -97,7 +97,8 @@ void Shader::SetMatrix4(const char* name, const glm::mat4& matrix, bool useShade
         this->Use();
     glUniformMatrix4fv(glGetUniformLocation(this->ID, name), 1, false, glm::value_ptr(matrix));
 }
-
+#pragma endregion
+#pragma region Set Uniform with location
 void Shader::SetFloat(const GLuint location, float value, bool useShader) const
 {
     if (useShader)
@@ -152,12 +153,17 @@ void Shader::SetMatrix4(const GLuint location, const glm::mat4& matrix, bool use
         this->Use();
     glUniformMatrix4fv(location, 1, false, glm::value_ptr(matrix));
 }
-
+#pragma endregion
 
 
 void Shader::Delete()
 {
     glDeleteProgram(this->ID);
+}
+
+GLuint Shader::getUniformLoc(const char* name)
+{
+    return glGetUniformLocation(this->ID, name);
 }
 
 

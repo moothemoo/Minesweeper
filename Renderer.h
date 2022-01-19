@@ -50,23 +50,89 @@ public:
 
 	void Render();
 	
+	enum UniformType
+	{
+		INT,
+		FLOAT,
+		VEC2,
+		VEC3,
+		VEC4,
+		MAT4
+	};
+
 private:
+
+	class UniformInput
+	{
+	public:
+		template<typename T>
+		UniformInput(GLuint location, UniformType type) : type(type), location(location)
+		{
+			switch (T)
+			{
+			case int:
+				type = UniformType::INT;
+				break;
+			case float:
+				type = UniformType::FLOAT;
+				break;
+			case glm::vec2:
+				type = UniformType::VEC2;
+				break;
+			case glm::vec3:
+				type = UniformType::VEC3;
+				break;
+			case glm::vec4:
+				type = UniformType::VEC4;
+				break;
+			case glm::mat4:
+				type = UniformType::MAT4;
+				break;
+			}
+		}
+		
+		void Use(Shader shader)
+		{
+			switch (type)
+			{
+			case UniformType::INT:
+				shader.SetInteger(location, *(int*) ptr);
+				break;
+			case UniformType::FLOAT:
+				shader.SetFloat(location, *(float*)ptr);
+				break;
+			case UniformType::VEC2:
+				shader.SetVector2f(location, *(glm::vec2*)ptr);
+				break;
+			case UniformType::VEC3:
+				shader.SetVector3f(location, *(glm::vec3*)ptr);
+				break;
+			case UniformType::VEC4:
+				shader.SetVector4f(location, *(glm::vec4*)ptr);
+				break;
+			case UniformType::MAT4:
+				shader.SetMatrix4(location, *(glm::mat4*)ptr);
+				break;
+			}
+		}
+
+
+	private: 
+		UniformType type;
+		GLuint location;
+		const void* ptr;
+	};
+	
 	const Shader* _Shader;
-	std::map<std::string, GLuint> uniformCache;
+
+	std::map<std::string, UniformInput> uniformCache;
 	std::map<std::string, GLuint>::iterator cacheItr;
 
-	std::map<GLuint, float> floatUniforms;
-	std::map<GLuint, float>::const_iterator floatItr;
-	std::map<GLuint, int> intUniforms;
-	std::map<GLuint, int>::const_iterator intItr;
-	std::map<GLuint, glm::vec2> vec2Uniforms;
-	std::map<GLuint, glm::vec2>::const_iterator vec2Itr;
-	std::map<GLuint, glm::vec3> vec3Uniforms;
-	std::map<GLuint, glm::vec3>::const_iterator vec3Itr;
-	std::map<GLuint, glm::vec4> vec4Uniforms;
-	std::map<GLuint, glm::vec4>::const_iterator vec4Itr;
-	std::map<GLuint, glm::mat4> mat4Uniforms;
-	std::map<GLuint, glm::mat4>::const_iterator mat4Itr;
+	template <typename T>
+	void LoadUniform(const char* name);
+
+	template <typename T>
+	void SetUniformValue(const char* name, T value);
 
 };
 

@@ -54,13 +54,18 @@ public:
 	void Render();
 
 private:
+	template<typename DataT>
 	class UniformInput;
 	enum ClassHashes;
 	
 	const Shader* _Shader;
 
-	std::map<std::string, UniformInput> uniformCache;
-	std::map<std::string, UniformInput>::const_iterator cacheItr;
+	std::map<std::string, UniformInput<int>> uniformCache;
+	std::map<std::string, UniformInput<float>> uniformCache;
+	std::map<std::string, UniformInput<glm::vec2>> uniformCache;
+	std::map<std::string, UniformInput<glm::vec3>> uniformCache;
+	std::map<std::string, UniformInput<glm::vec4>> uniformCache;
+	std::map<std::string, UniformInput<glm::mat4>> uniformCache;
 
 	template <typename DataT>
 	void LoadUniform(const char* name);
@@ -69,51 +74,16 @@ private:
 	void SetUniformValue(const char* name, DataT value);
 };
 
-
+template<typename DataT>
 class Renderer::UniformInput
 {
 public:
-	template<typename DataT>
-	UniformInput(GLuint location) : location(location)
-	{
-		typeHash = typeid(DataT).hash_code();
-	}
-		
-	~UniformInput()
-	{
-		delete ptr;
-	}
-
-	template<typename DataT>
-	void setData(DataT data)
-	{
-		assert(typeHash == typeid(DataT).hash_code());
-		DataT* temp = new DataT();
-		temp = data;
-		ptr = (void*)temp;
-	}
-
-	template<typename DataT>
-	DataT getData() const
-	{
-		assert(type == typeid(DataT).hash_code());
-		return *(DataT*)ptr;
-	}
-	
-	GLuint getLocation() const
-	{
-		return location;
-	}
-
-	unsigned int getTypeHash() const
-	{
-		return typeHash;
-	}
+	template<typename DataT> 
+	UniformInput(GLuint location) : location(location) {}
 
 private: 
-	unsigned long long typeHash;
 	GLuint location;
-	const void* ptr;
+	DataT data;
 };
 
 #endif //SPRITE_RENDERER_H

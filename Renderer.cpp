@@ -17,12 +17,23 @@ GLuint Renderer::GetUniformLoc(const char* name)
 
 void Renderer::SetUniforms(bool useShader)
 {
-	
+    if (useShader)
+    {
+        _Shader->Use();
+    }
+    cacheItr = uniformCache.begin();
+    
 }
 
-template<typename T>
+template<typename DataT>
 void Renderer::LoadUniform(const char* name)
 {   
-    uniformCache[name] = UniformInput<T>(_Shader.getUniformLoc(name));
+    uniformCache[name] = UniformInput<DataT>(_Shader.getUniformLoc(name));
+}
+
+template <typename DataT>
+void Renderer::SetUniformValue(const char* name, DataT value)
+{
+    uniformCache[name].setData(value);
 }
 

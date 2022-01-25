@@ -15,9 +15,9 @@ GLuint Renderer::GetUniformLoc(const char* name)
     return cacheItr->second;
 */}
 
-void Renderer::SetAllUniforms(bool useShader)
+void Renderer::SetUniforms(bool useShader) const
 {
-    
+    SetCache<int>(&uniformIntCache);
 }
 
 

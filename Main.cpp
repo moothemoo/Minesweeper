@@ -16,10 +16,6 @@
 #include"ResourceManager.h"
 #include"Window.h"
 #include"Renderer.h"
-#include"TileRenderer.h"
-#include"MapRenderer.h"
-#include"Tile.h"
-#include"Game.h"
 
 // Prototypes
 void processInput(GLFWwindow* window, float dt);
@@ -114,12 +110,6 @@ int main()
     int tX, tY;
     bool validTile;
 
-    MapRenderer map(sSheet, tShader, 1.0f, 1.0f);
-    map.init("Hex");
-
-    Game game = Game(width, height);
-    game.Init();
-
 
     while (!glfwWindowShouldClose(window.window))
     {
@@ -130,10 +120,7 @@ int main()
         //std::cout << 1 / deltaTime << std::endl;
 
         // input
-        game.ProcessInput(window.window, deltaTime);
-
-        game.Render();
-
+        processInput(window.window, deltaTime);
         //std::cout << tX << ", " << tY << ",     " << validTile << std::endl;
 
         // Swaps back buffer and front buffer

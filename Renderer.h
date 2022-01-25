@@ -24,7 +24,7 @@ public:
 	
 
 	GLuint GetUniformLoc(const char* name);
-	void SetAllUniforms(bool useShader = false);
+	void SetUniforms(bool useShader = false) const;
 
 	/*Uniform Loaders
 #pragma region Uniform Loaders

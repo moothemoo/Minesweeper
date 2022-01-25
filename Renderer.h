@@ -24,7 +24,7 @@ public:
 	
 
 	GLuint GetUniformLoc(const char* name);
-	void SetUniforms(bool useShader = false);
+	void SetAllUniforms(bool useShader = false);
 
 	/*Uniform Loaders
 #pragma region Uniform Loaders
@@ -53,6 +53,22 @@ public:
 */
 	void Render();
 
+	template <typename DataT>
+	void LoadUniform(const char* name);
+
+	template <typename DataT>
+	void SetUniformValue(GLuint loc, DataT value) { assert(false); }
+
+	void SetUniformValue(GLuint loc, int value);
+	void SetUniformValue(GLuint loc, float value);
+	void SetUniformValue(GLuint loc, glm::vec2 value);
+	void SetUniformValue(GLuint loc, glm::vec3 value);
+	void SetUniformValue(GLuint loc, glm::vec4 value);
+	void SetUniformValue(GLuint loc, glm::mat4 value);
+
+	template <typename DataT>
+	void SetUniformValue(const char* name, DataT value);
+
 private:
 	template<typename DataT>
 	class UniformInput;
@@ -60,30 +76,42 @@ private:
 	
 	const Shader* _Shader;
 
-	std::map<std::string, UniformInput<int>> uniformCache;
-	std::map<std::string, UniformInput<float>> uniformCache;
-	std::map<std::string, UniformInput<glm::vec2>> uniformCache;
-	std::map<std::string, UniformInput<glm::vec3>> uniformCache;
-	std::map<std::string, UniformInput<glm::vec4>> uniformCache;
-	std::map<std::string, UniformInput<glm::mat4>> uniformCache;
+	std::map<std::string, GLuint> uniformNameCache;
 
-	template <typename DataT>
-	void LoadUniform(const char* name);
+	std::map<GLuint, int> uniformIntCache;
+	std::map<GLuint, float> uniformFloatCache;
+	std::map<GLuint, glm::vec2> uniformVec2Cache;
+	std::map<GLuint, glm::vec3> uniformVec3Cache;
+	std::map<GLuint, glm::vec4> uniformVec4Cache;
+	std::map<GLuint, glm::mat4> uniformMat4Cache;
 
-	template <typename DataT>
-	void SetUniformValue(const char* name, DataT value);
+	template<typename DataT>
+	void SetCache(std::map<GLuint, DataT>& values) const;
+
+	template<typename DataT>
+	void SetData(GLuint loc, DataT data) const { assert(false); }
+
+	void SetData(GLuint loc, int data) const		{ this->_Shader->SetInteger(loc, data); }
+	void SetData(GLuint loc, float data) const		{ this->_Shader->SetFloat(loc, data); }
+	void SetData(GLuint loc, glm::vec2 data) const	{ this->_Shader->SetVector2f(loc, data); }
+	void SetData(GLuint loc, glm::vec3 data) const	{ this->_Shader->SetVector3f(loc, data); }
+	void SetData(GLuint loc, glm::vec4 data) const	{ this->_Shader->SetVector4f(loc, data); }
+	void SetData(GLuint loc, glm::mat4 data) const	{ this->_Shader->SetMatrix4(loc, data); }
 };
 
-template<typename DataT>
-class Renderer::UniformInput
-{
-public:
-	template<typename DataT> 
-	UniformInput(GLuint location) : location(location) {}
-
-private: 
-	GLuint location;
-	DataT data;
-};
+//template<typename DataT>
+//class Renderer::UniformInput
+//{
+//public:
+//	UniformInput(GLuint location) : location(location) {}
+//
+//	void setData(DataT value) { data = value }
+//	DataT getData() const { return data;  }
+//	GLuint getLoc() const { return location; }
+//
+//private: 
+//	GLuint location;
+//	DataT data;
+//};
 
 #endif //SPRITE_RENDERER_H

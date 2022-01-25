@@ -161,6 +161,7 @@ void Shader::Delete()
     glDeleteProgram(this->ID);
 }
 
+//OWO
 GLuint Shader::getUniformLoc(const char* name)
 {
     return glGetUniformLocation(this->ID, name);

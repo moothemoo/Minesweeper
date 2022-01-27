@@ -15,7 +15,7 @@
 #include"Camera2D.h"
 #include"ResourceManager.h"
 #include"Window.h"
-#include"Renderer.h"
+//#include"Renderer.h"
 
 // Prototypes
 void processInput(GLFWwindow* window, float dt);
@@ -109,7 +109,6 @@ int main()
 
     int tX, tY;
     bool validTile;
-
 
     while (!glfwWindowShouldClose(window.window))
     {

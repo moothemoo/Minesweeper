@@ -7,6 +7,9 @@ VAO::VAO()
 
 void VAO::LinkAttrib(VBO& VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void* offset)
 {
+	_VBO = &VBO;
+	_Stride = stride;
+
 	VBO.Bind();
 	// Configure vertex attributes
 	glVertexAttribPointer(layout, numComponents, type, GL_FALSE, stride, offset);

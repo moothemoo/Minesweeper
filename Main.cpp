@@ -15,6 +15,7 @@
 #include"Camera2D.h"
 #include"ResourceManager.h"
 #include"Window.h"
+#include "GeneralRenderer.h"
 //#include"Renderer.h"
 
 // Prototypes
@@ -64,6 +65,10 @@ int main()
         0.5f, -0.5f,            1.0f, 0.0f          //3
     };
 
+    VBO tile = VBO(vertices, sizeof(vertices));
+    VAO tileVAO = VAO();
+    tileVAO.LinkAttrib(tile, 0, 4, GL_FLOAT, 4*sizeof(GLfloat), (void*)0);
+
     // Indices of 3 triangles
     GLuint indices[] =
     {
@@ -96,6 +101,11 @@ int main()
     Camera2D camera(fovWidth, fovHeight, glm::vec2(0.0f, 0.0f));
     //glm::mat4 view = glm::mat4(1.0f);
 
+
+    GeneralRenderer renderer = GeneralRenderer(shader);
+    renderer.LoadUniform<glm::mat4>("camera");
+    renderer.SetUniformValue("camera", glm::mat4(1.0f));
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -121,6 +131,8 @@ int main()
         // input
         processInput(window.window, deltaTime);
         //std::cout << tX << ", " << tY << ",     " << validTile << std::endl;
+        doggo.Bind();
+        renderer.Render(tileVAO, true, true);
 
         // Swaps back buffer and front buffer
         window.newFrame();

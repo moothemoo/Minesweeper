@@ -162,7 +162,7 @@ void Shader::Delete()
 }
 
 //OWO
-GLuint Shader::getUniformLoc(const char* name)
+GLuint Shader::getUniformLoc(const char* name) const
 {
     return glGetUniformLocation(this->ID, name);
 }

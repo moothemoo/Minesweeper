@@ -27,14 +27,14 @@ void GeneralRenderer::Render(const VAO& vertices, bool useShader, bool loadUnifo
 }
 
 GLuint GeneralRenderer::GetUniformLoc(const char* name)
-{/*
-    cacheItr = uniformCache.find(name);
-    if (cacheItr == uniformCache.end())
+{
+    std::map<std::string, GLuint>::iterator cacheItr = uniformNameCache.find(name);
+    if (cacheItr == uniformNameCache.end())
     {
-        uniformCache[name] = glGetUniformLocation(_Shader->ID, name);
-        return uniformCache[name];
+        uniformNameCache[name] = glGetUniformLocation(_Shader->ID, name);
+        return uniformNameCache[name];
     }
-    return cacheItr->second;*/
+    return cacheItr->second;
 }
 
 void GeneralRenderer::SetUniforms(bool useShader) const
@@ -53,33 +53,7 @@ void GeneralRenderer::SetUniforms(bool useShader) const
 }
 
 
-template<typename DataT>
-void GeneralRenderer::LoadUniform(const char* name)
-{   
-    unsigned long long typeHash = typeid(DataT).hash_code();
-    switch(typeHash)
-    {
-        case typeid(int).hash_code() :
-            uniformIntCache[name] = UniformInput<int>(_Shader.getUniformLoc(name));
-            return;
-        case typeid(float).hash_code():
-            uniformFloatCache[name] = UniformInput<float>(_Shader.getUniformLoc(name));
-            return;
-        case typeid(glm::vec2).hash_code():
-            uniformVec2Cache[name] = UniformInput<glm::vec2>(_Shader.getUniformLoc(name));
-            return;
-        case typeid(glm::vec3).hash_code():
-            uniformVec2Cache[name] = UniformInput<glm::vec3>(_Shader.getUniformLoc(name));
-            return;
-        case typeid(glm::vec4).hash_code():
-            uniformVec2Cache[name] = UniformInput<glm::vec4>(_Shader.getUniformLoc(name));
-            return;
-        case typeid(glm::mat4).hash_code():
-            uniformVec2Cache[name] = UniformInput<glm::mat4>(_Shader.getUniformLoc(name));
-            return;
-    }
-    assert(false);
-}
+
 
 void GeneralRenderer::SetUniformValue(GLuint loc, int value)         { uniformIntCache[loc] = value; }
 void GeneralRenderer::SetUniformValue(GLuint loc, float value)       { uniformFloatCache[loc] = value; }
@@ -88,18 +62,6 @@ void GeneralRenderer::SetUniformValue(GLuint loc, glm::vec3 value)   { uniformVe
 void GeneralRenderer::SetUniformValue(GLuint loc, glm::vec4 value)   { uniformVec4Cache[loc] = value; }
 void GeneralRenderer::SetUniformValue(GLuint loc, glm::mat4 value)   { uniformMat4Cache[loc] = value; }
 
-template <typename DataT>
-void GeneralRenderer::SetUniformValue(const char* name, DataT value) 
-{ 
-    this->SetUniformValue(uniformNameCache[name], value); 
-}
 
-template<typename DataT>
-void GeneralRenderer::SetCache(const std::map<GLuint, DataT>& values) const
-{
-    typename std::map<GLuint, DataT>::const_iterator itr;
-    for (itr = values.begin(); itr != values.end(); itr++)
-    {
-        this->SetData(itr->first, itr->second);
-    }
-}
+
+

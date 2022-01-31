@@ -53,8 +53,43 @@ public:
 */
 	void Render(const VAO& vertices, bool useShader = false, bool loadUniforms = false) const;
 
-	template <typename DataT>
-	void LoadUniform(const char* name);
+	template<typename DataT>
+	void LoadUniform(const char* name)
+	{
+		GLuint loc = _Shader->getUniformLoc(name);
+
+		if (typeid(DataT) == typeid(int))
+		{
+			uniformIntCache[loc] = 0;
+			return;
+		}
+		else if (typeid(DataT) == typeid(float))
+		{
+			uniformFloatCache[loc] = 0;
+			return;
+		}
+		else if (typeid(DataT) == typeid(glm::vec2))
+		{
+			uniformVec2Cache[loc] = glm::vec2(0.0f);
+			return;
+		}
+		else if (typeid(DataT) == typeid(glm::vec3))
+		{
+			uniformVec3Cache[loc] = glm::vec3(0.0f);
+			return;
+		}
+		else if (typeid(DataT) == typeid(glm::vec4))
+		{
+			uniformVec4Cache[loc] = glm::vec4(0.0f);
+			return;
+		}
+		else if (typeid(DataT) == typeid(glm::mat4))
+		{
+			uniformMat4Cache[loc] = glm::mat4(1.0f);
+			return;
+		}
+		assert(false);
+	}
 
 	template <typename DataT>
 	void SetUniformValue(GLuint loc, DataT value) { assert(false); }
@@ -67,7 +102,10 @@ public:
 	void SetUniformValue(GLuint loc, glm::mat4 value);
 
 	template <typename DataT>
-	void SetUniformValue(const char* name, DataT value);
+	void SetUniformValue(const char* name, DataT value)
+	{
+		this->SetUniformValue(uniformNameCache[name], value);
+	}
 
 private:
 	template<typename DataT>
@@ -86,7 +124,14 @@ private:
 	std::map<GLuint, glm::mat4> uniformMat4Cache;
 
 	template<typename DataT>
-	void SetCache(const std::map<GLuint, DataT>& values) const;
+	void SetCache(const std::map<GLuint, DataT>& values) const
+	{
+		typename std::map<GLuint, DataT>::const_iterator itr;
+		for (itr = values.begin(); itr != values.end(); itr++)
+		{
+			this->SetData(itr->first, itr->second);
+		}
+	}
 
 	template<typename DataT>
 	void SetData(GLuint loc, DataT data) const { assert(false); }

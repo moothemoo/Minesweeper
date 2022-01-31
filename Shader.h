@@ -28,7 +28,7 @@ public:
 
     // utility functions
 
-    GLuint getUniformLoc(const char* name);
+    GLuint getUniformLoc(const char* name) const;
     
     void    SetFloat(const char* name, float value, bool useShader = false) const;
     void    SetInteger(const char* name, int value, bool useShader = false) const;

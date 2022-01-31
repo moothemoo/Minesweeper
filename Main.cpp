@@ -102,7 +102,7 @@ int main()
     //glm::mat4 view = glm::mat4(1.0f);
 
 
-    GeneralRenderer renderer = GeneralRenderer(shader);
+    GeneralRenderer renderer = GeneralRenderer(tShader);
     renderer.LoadUniform<glm::mat4>("camera");
     renderer.SetUniformValue("camera", glm::mat4(1.0f));
 
@@ -132,6 +132,7 @@ int main()
         processInput(window.window, deltaTime);
         //std::cout << tX << ", " << tY << ",     " << validTile << std::endl;
         doggo.Bind();
+        renderer.SetUniformValue("camera", camera.GetProjection());
         renderer.Render(tileVAO, true, true);
 
         // Swaps back buffer and front buffer

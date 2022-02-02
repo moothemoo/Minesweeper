@@ -10,16 +10,16 @@ public:
 	GLuint ID;
 	VAO();
 
-	void LinkAttrib(VBO& VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void* offset);
+	void LinkVBO(VBO& VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void* offset);
 	void Bind() const;
 	void Unbind() const;
 	void Delete();
 
-	GLsizeiptr GetVBOSize() const { return _VBO->GetSize()/_Stride; }
+	GLsizeiptr GetNumVertices() const { return numVertices; }
 
 private:
-	const VBO* _VBO;
-	GLsizeiptr _Stride;
+
+	GLsizeiptr numVertices;
 };
 
 #endif // !VAO_CLASS_H

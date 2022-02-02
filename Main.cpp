@@ -15,7 +15,7 @@
 #include"Camera2D.h"
 #include"ResourceManager.h"
 #include"Window.h"
-#include "GeneralRenderer.h"
+#include "Renderer.h"
 //#include"Renderer.h"
 
 // Prototypes
@@ -59,22 +59,17 @@ int main()
     // Triangle corners
     GLfloat vertices[] =
     {// Vertex Positions     /  Tex Pos                           / Vertex
-        -0.5f, -0.5f,           0.0f, 0.0f,         //0
-        -0.5f, 0.5f,            0.0f, 1.0f,         //1
-        0.5f, 0.5f,             1.0f, 1.0f,         //2
-        0.5f, -0.5f,            1.0f, 0.0f          //3
+        -0.5f, -0.5f,           0.0f, 0.0f,         //bottom left
+        -0.5f, 0.5f,            0.0f, 1.0f,         //top left
+        0.5f, 0.5f,             1.0f, 1.0f,         //top right
+        0.5f, -0.5f,            1.0f, 0.0f,         //bottom right
+        -0.5f, -0.5f,           0.0f, 0.0f,         //bottom left
+        0.5f, 0.5f,             1.0f, 1.0f         // top right
     };
 
     VBO tile = VBO(vertices, sizeof(vertices));
     VAO tileVAO = VAO();
-    tileVAO.LinkAttrib(tile, 0, 4, GL_FLOAT, 4*sizeof(GLfloat), (void*)0);
-
-    // Indices of 3 triangles
-    GLuint indices[] =
-    {
-        0, 1, 2,
-        0, 2, 3
-    };
+    tileVAO.LinkVBO(tile, 0, 4, GL_FLOAT, 4*sizeof(GLfloat), (void*)0);
 
     // Opens window, x,y of lower left corner of window, width, height of window
     glViewport(0, 0, width, height);
@@ -102,7 +97,7 @@ int main()
     //glm::mat4 view = glm::mat4(1.0f);
 
 
-    GeneralRenderer renderer = GeneralRenderer(tShader);
+    Renderer renderer = Renderer(tShader);
     renderer.LoadUniform<glm::mat4>("camera");
     renderer.SetUniformValue("camera", glm::mat4(1.0f));
 
@@ -131,8 +126,8 @@ int main()
         // input
         processInput(window.window, deltaTime);
         //std::cout << tX << ", " << tY << ",     " << validTile << std::endl;
-        doggo.Bind();
-        renderer.SetUniformValue("camera", camera.GetProjection());
+        sSheetTex.Bind();
+        renderer.SetUniformValue("camera", glm::mat4(1.0f));
         renderer.Render(tileVAO, true, true);
 
         // Swaps back buffer and front buffer

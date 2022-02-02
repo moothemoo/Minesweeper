@@ -1,5 +1,5 @@
-#include"GeneralRenderer.h"
-GeneralRenderer::GeneralRenderer(const Shader& shader)
+#include"Renderer.h"
+Renderer::Renderer(const Shader& shader)
     : _Shader(&shader)
 {
     uniformIntCache = std::map<GLuint, int>();
@@ -10,7 +10,7 @@ GeneralRenderer::GeneralRenderer(const Shader& shader)
     uniformMat4Cache = std::map<GLuint, glm::mat4>();
 }
 
-void GeneralRenderer::Render(const VAO& vertices, bool useShader, bool loadUniforms) const
+void Renderer::Render(const VAO& vertices, bool useShader, bool loadUniforms) const
 {
     if (loadUniforms)
     {
@@ -21,12 +21,14 @@ void GeneralRenderer::Render(const VAO& vertices, bool useShader, bool loadUnifo
         _Shader->Use();
     }
 
-    glBindVertexArray(vertices.ID);
-    glDrawArrays(GL_TRIANGLES, 0, vertices.GetVBOSize());
-    glBindVertexArray(0);
+    vertices.Bind();
+
+    glDrawArrays(GL_TRIANGLES, 0, vertices.GetNumVertices());
+
+    vertices.Unbind();
 }
 
-GLuint GeneralRenderer::GetUniformLoc(const char* name)
+GLuint Renderer::GetUniformLoc(const char* name)
 {
     std::map<std::string, GLuint>::iterator cacheItr = uniformNameCache.find(name);
     if (cacheItr == uniformNameCache.end())
@@ -37,7 +39,7 @@ GLuint GeneralRenderer::GetUniformLoc(const char* name)
     return cacheItr->second;
 }
 
-void GeneralRenderer::SetUniforms(bool useShader) const
+void Renderer::SetUniforms(bool useShader) const
 {
     if (useShader)
     {
@@ -55,12 +57,12 @@ void GeneralRenderer::SetUniforms(bool useShader) const
 
 
 
-void GeneralRenderer::SetUniformValue(GLuint loc, int value)         { uniformIntCache[loc] = value; }
-void GeneralRenderer::SetUniformValue(GLuint loc, float value)       { uniformFloatCache[loc] = value; }
-void GeneralRenderer::SetUniformValue(GLuint loc, glm::vec2 value)   { uniformVec2Cache[loc] = value; }
-void GeneralRenderer::SetUniformValue(GLuint loc, glm::vec3 value)   { uniformVec3Cache[loc] = value; }
-void GeneralRenderer::SetUniformValue(GLuint loc, glm::vec4 value)   { uniformVec4Cache[loc] = value; }
-void GeneralRenderer::SetUniformValue(GLuint loc, glm::mat4 value)   { uniformMat4Cache[loc] = value; }
+void Renderer::SetUniformValue(GLuint loc, int value)         { uniformIntCache[loc] = value; }
+void Renderer::SetUniformValue(GLuint loc, float value)       { uniformFloatCache[loc] = value; }
+void Renderer::SetUniformValue(GLuint loc, glm::vec2 value)   { uniformVec2Cache[loc] = value; }
+void Renderer::SetUniformValue(GLuint loc, glm::vec3 value)   { uniformVec3Cache[loc] = value; }
+void Renderer::SetUniformValue(GLuint loc, glm::vec4 value)   { uniformVec4Cache[loc] = value; }
+void Renderer::SetUniformValue(GLuint loc, glm::mat4 value)   { uniformMat4Cache[loc] = value; }
 
 
 

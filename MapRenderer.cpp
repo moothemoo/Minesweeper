@@ -48,9 +48,9 @@ void MapRenderer::setTileTex(unsigned int texID, int xLoc, int yLoc)
 
 	GLfloat *ptr = (GLfloat*) glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 
-	//	   |Bottom Left   | Bottom right  | Top left	  | Top right	  | Top left	  | Bottom right  |
-	//	   |Vertex|Texture| Vertex|Texture| Vertex|Texture| Vertex|Texture| Vertex|Texture| Vertex|Texture|
-	//	   | 0	1 |	2	3 | 4	5 | 6	7 | 8	9 | 10	11| 12	13| 14	15| 16	17| 18	19| 20	21| 22	23|
+	//	   |Bottom Left    | Bottom right  | Top left	   | Top right	   | Top left	   | Bottom right  |
+	//	   | Vertex|Texture| Vertex|Texture| Vertex|Texture| Vertex|Texture| Vertex|Texture| Vertex|Texture|
+	//	   | 0 	 1 | 2   3 | 4	 5 | 6	 7 | 8	 9 | 10  11| 12  13| 14  15| 16	 17| 18  19| 20  21| 22  23|
 	
 	//Bottom Left
 	ptr[quadLoc + 2] = left;
